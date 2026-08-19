@@ -1,0 +1,804 @@
+# GSTU CSE Student & Alumni Directory
+
+## Complete System Implementation Prompt (v2 — clarified)
+
+You are an expert software architect and full-stack developer.
+
+Build a **Student & Alumni Directory for the Department of Computer Science and Engineering (CSE), Gopalganj Science and Technology University (GSTU)**.
+
+This is an academic departmental project. The goal is **not** to build a large or overly complex platform.
+
+The product must remain:
+
+* Simple
+* Reliable
+* Easy to maintain
+* Fast
+* Secure
+* Professional
+* Premium-looking
+* Focused only on the required functionality
+
+**Do NOT add unnecessary features.**
+
+---
+
+# TECH STACK (FIXED — do not substitute)
+
+* **Framework**: Next.js 15 (App Router), TypeScript
+* **Styling**: Tailwind CSS + shadcn/ui
+* **Animation**: Framer Motion
+* **Backend/DB**: Supabase (Postgres + Supabase Auth + Supabase Storage)
+* **Auth**: Supabase Auth for credential handling and session management. Do not hand-roll password hashing or session tokens — use Supabase's built-in mechanisms.
+* **File storage**: Profile pictures go in Supabase Storage (a dedicated bucket, e.g. `profile-pictures`). Enforce a max file size (2MB) and allowed types (jpg, png, webp) at both frontend and backend/storage-policy level.
+
+Do not introduce any other framework, ORM, or auth library without explicit confirmation.
+
+---
+
+# EXECUTION RULE — PHASE CHECKPOINTS (CRITICAL)
+
+This project must be built in the phases listed later in this document, **in order, one at a time**.
+
+* After completing each phase, **stop and summarize what was built**, then explicitly wait for my ("approved") confirmation before starting the next phase.
+* Do not silently continue to the next phase even if the current one seems complete.
+* Do not batch multiple phases into a single response/session unless I explicitly say "continue through phase X".
+* If something in a later phase depends on a decision not yet made, pause and ask rather than assuming.
+
+---
+
+# CORE PRODUCT CONCEPT
+
+The platform will contain information about:
+
+* Current CSE Students
+* CSE Alumni
+
+The website will work primarily as a **public Student & Alumni Directory**.
+
+Normal visitors do **not** need to create an account or sign in.
+
+Only approved users will be allowed to enter and manage student/alumni information.
+
+---
+
+# USER ROLES
+
+There will be exactly **two roles** in the system:
+
+## 1. Admin
+
+Admin is responsible for:
+
+* Approving user registrations
+* Managing approved users
+* Managing student/alumni information
+* Adding student/alumni profiles
+* Updating student/alumni profiles
+* Deleting student/alumni profiles when necessary
+
+Admin should have full access to the management functionality.
+
+---
+
+## 2. Approved User
+
+An Approved User is a registered user whose account has been approved by an Admin.
+
+Approved users can:
+
+* Sign in
+* Add Student profiles
+* Add Alumni profiles
+* Update **any** Student profile (not limited to profiles they created)
+* Update **any** Alumni profile (not limited to profiles they created)
+
+This is intentionally **shared edit access** — any approved user can edit any profile. `created_by` always reflects the original creator regardless of who last edited it; `updated_by` always reflects the most recent editor. This history must never be overwritten to hide who actually made a change.
+
+They cannot approve other users.
+
+They cannot manage system-level settings.
+
+They cannot access Admin functionality.
+
+They cannot delete profiles (deletion is Admin-only).
+
+---
+
+# PUBLIC VISITOR
+
+A normal website visitor does NOT need:
+
+* Sign up
+* Sign in
+* Account
+* Approval
+
+They can directly visit the website and:
+
+* View all students
+* View all alumni
+* Search students/alumni
+* Browse by session/batch
+* View individual profiles
+* Sort students/alumni by roll
+
+The directory should be publicly accessible.
+
+---
+
+# AUTHENTICATION FLOW
+
+## Registration
+
+The registration page will contain ONLY:
+
+* Name
+* Email
+* Student ID
+* Password
+
+After registration:
+
+`Registered → Pending Approval → Admin Approval → Approved User`
+
+Until approval, the user cannot sign in.
+
+After Admin approval:
+
+`Approved User → Can Sign In`
+
+Do not automatically approve registrations.
+
+**Duplicate/edge-case handling:**
+* Email must be unique across the `users` table at all times (pending, approved, or rejected).
+* If a registration is **rejected**, delete the pending user record entirely rather than keeping a "rejected" status. This allows the same email to register again later. Do not keep a rejected-user table or history — that would be unnecessary audit complexity per the "what not to build" rules.
+* If an Admin attempts to approve/reject a user that no longer exists (already handled), return a clear error rather than failing silently.
+
+---
+
+# LOGIN FLOW
+
+Only approved users and admins can sign in.
+
+If a pending user attempts to sign in:
+
+> "Your account is waiting for admin approval."
+
+If an approved user signs in:
+
+→ Redirect to the appropriate dashboard.
+
+Admin:
+
+→ Admin Dashboard
+
+Approved User:
+
+→ User Dashboard
+
+---
+
+# IMPORTANT AUTHORIZATION RULE
+
+Do NOT rely only on frontend role checking.
+
+Every protected backend endpoint must verify:
+
+1. Authentication
+2. User approval status
+3. User role
+4. Required permission
+
+A normal public visitor must never be able to access protected management APIs.
+
+An Approved User must never be able to access Admin-only APIs.
+
+Implement this via Supabase Row Level Security (RLS) policies on every table, in addition to server-side route checks — do not rely on RLS alone or API-layer checks alone; both must independently enforce the rule.
+
+---
+
+# PROFILE DATA
+
+Each Student/Alumni profile should contain ONLY the following information.
+
+## Basic Information
+
+* Name
+* Student ID — unique **within its own role category** (i.e., unique among students, and independently unique among alumni). A student who graduates and becomes an alumni record reuses the same Student ID; do not treat this as a collision.
+* Session / Batch
+* Roll Number — an integer, unique **within a given Session/Batch** (not globally unique). Two different sessions may both have a Roll 12.
+* Profile Picture
+* Student/Alumni Status
+
+## Status Badge
+
+Current students must have a clear visual indicator such as:
+
+**ACTIVE STUDENT**
+
+Alumni must have:
+
+**ALUMNI**
+
+The badge/status indicator should be clearly visible on the profile.
+
+Do not use unnecessary status categories.
+
+---
+
+# CONTACT & SOCIAL INFORMATION
+
+* Phone Number
+* Facebook Profile Link
+* Instagram Profile Link
+* LinkedIn Profile Link
+
+These fields are **optional**.
+
+---
+
+# CAREER INFORMATION
+
+## Job Status
+
+Allowed values:
+
+* Employed
+* Business Owner
+* Unemployed
+* Teaching
+* Other
+
+## Current Workplace / Employer
+
+Store the current workplace/employer.
+
+## Workplace Details
+
+Include relevant information such as:
+
+* Company Name
+* Location
+* Other necessary workplace information
+
+Do not create an unnecessarily complicated employment-management system.
+
+---
+
+# LOCATION INFORMATION
+
+* Home District
+* Hometown / Origin
+* Current City of Residence
+
+---
+
+# EDUCATIONAL BACKGROUND
+
+Store:
+
+* Schools attended before university
+* Colleges attended before university
+
+Keep this simple (plain text fields, not a separate normalized table).
+
+---
+
+# AUDIT INFORMATION
+
+Every Student/Alumni profile must keep basic information about who created and updated it.
+
+Display:
+
+**Created by: [Approved User/Admin Name]**
+
+If the profile has been updated:
+
+**Updated by: [Approved User/Admin Name]**
+
+The system should automatically store:
+
+* Created By (user id, resolved server-side from the authenticated session — never trust a frontend-submitted value)
+* Created At
+* Updated By (user id, resolved server-side, updated on every edit)
+* Updated At
+
+Do NOT add unnecessary audit/history functionality beyond this — no version history, no changelog, no diff tracking.
+
+---
+
+# DIRECTORY ORGANIZATION
+
+## Student / Alumni Separation
+
+Users should easily distinguish:
+
+* Current Students
+* Alumni
+
+---
+
+## Session / Batch Organization
+
+Students and alumni should be grouped/filterable by:
+
+**Session / Batch**
+
+Example:
+
+* CSE 11
+* CSE 12
+* CSE 13
+* CSE 14
+* CSE 15
+
+Sessions live in their own `sessions` table (id, label, sort_order) rather than being hardcoded. Admin can add new sessions as needed through a simple mechanism (does not need its own dedicated UI section — can be part of the profile add/edit form, e.g. "add new session" inline).
+
+---
+
+## Roll-wise Sorting
+
+Students/alumni within a session should be sortable by:
+
+**Roll Number**
+
+Roll Number is stored as an integer, so sorting is naturally numeric (1, 2, 3, ... 10, 11 — not lexicographic like "1, 10, 11, 2"). Default sort is ascending roll number within the selected session.
+
+---
+
+# SEARCH & FILTER
+
+Implement simple but efficient search.
+
+Users should be able to search by:
+
+* Name (case-insensitive, partial match)
+* Student ID (case-insensitive, partial match)
+* Roll (exact or partial numeric match)
+
+Filters:
+
+* Student / Alumni
+* Session / Batch
+
+Sorting:
+
+* Roll Number (ascending, default)
+
+Do not add unnecessary advanced filtering unless required later.
+
+---
+
+# SYSTEM ARCHITECTURE
+
+Before writing any database, backend, or frontend code:
+
+## FIRST — Design the System Architecture
+
+Create a simple architecture diagram/plan showing:
+
+`Public Visitor`
+
+↓
+
+`Frontend`
+
+↓
+
+`Backend/API`
+
+↓
+
+`Authentication & Authorization`
+
+↓
+
+`Database`
+
+And separately show:
+
+`Admin / Approved User`
+
+↓
+
+`Authentication`
+
+↓
+
+`Protected Dashboard`
+
+↓
+
+`Backend/API`
+
+↓
+
+`Database`
+
+The architecture should clearly explain:
+
+* Public data flow
+* Authentication flow
+* Registration/approval flow
+* Admin flow
+* Approved User flow (including shared edit access)
+* Profile management flow
+
+Do not introduce microservices or unnecessary architectural complexity.
+
+Use a clean modular monolithic architecture (Next.js App Router + Supabase) unless there is a compelling reason otherwise.
+
+**Checkpoint: present the finalized architecture and wait for approval before starting Phase 2.**
+
+---
+
+# PHASE 1 — SYSTEM ARCHITECTURE
+
+1. Understand the complete requirement.
+2. Define system boundaries.
+3. Define the two roles.
+4. Define public vs protected functionality.
+5. Define authentication flow (Supabase Auth).
+6. Define approval flow.
+7. Define data flow.
+8. Define frontend/backend/database responsibilities.
+9. Define security boundaries (RLS + server-side checks).
+10. Produce the final architecture.
+
+**Checkpoint: wait for approval before Phase 2.**
+
+---
+
+# PHASE 2 — DATABASE DESIGN
+
+After the architecture is approved, design and implement the database in Supabase.
+
+The database must support:
+
+* Admin users
+* Registered users
+* Pending users
+* Approved users
+* Student profiles
+* Alumni profiles
+* Sessions/Batches
+* Profile ownership/creation information
+* Profile update information
+
+Design the schema carefully.
+
+Use:
+
+* Primary keys
+* Foreign keys
+* Unique constraints (email — global; student_id — unique within role category; roll_number — unique within session)
+* Appropriate indexes (session_id, roll_number, name for search/filter/sort performance)
+* Required fields
+* Optional fields (contact/social fields)
+* Appropriate enums/status values (user approval status, job status, student/alumni status)
+* Created timestamps
+* Updated timestamps
+* Row Level Security (RLS) policies enforcing the permission matrix at the database layer
+
+Avoid unnecessary tables. Avoid unnecessary normalization. The database should be **simple but properly structured**.
+
+**Checkpoint: wait for approval before Phase 3 (Database Testing).**
+
+---
+
+# DATABASE VERIFICATION
+
+Before moving to backend development, test:
+
+* User registration
+* Pending user creation
+* Admin approval
+* Rejected user deletion (and re-registration with same email)
+* Student profile creation
+* Alumni profile creation
+* Profile update by a *different* approved user than the creator (shared edit access)
+* Profile deletion (admin only)
+* Created By tracking
+* Updated By tracking
+* Session filtering
+* Roll sorting (numeric, not lexicographic)
+* Unique constraints (email, student_id-per-role, roll-per-session)
+
+**Checkpoint: wait for approval before Phase 4 (Backend).**
+
+---
+
+# PHASE 4 — BACKEND
+
+Build the backend (Next.js API routes / Server Actions + Supabase client) on top of the completed database.
+
+The backend must provide APIs for:
+
+## Authentication
+
+* Registration
+* Login
+* Logout
+* Session validation
+
+## Admin
+
+* View pending users
+* Approve users
+* Reject pending users (deletes the pending record)
+* View approved users
+* Manage student/alumni records (add, edit, delete)
+
+## Approved Users
+
+* Add student
+* Add alumni
+* Update **any** student profile
+* Update **any** alumni profile
+
+## Public APIs
+
+Public visitors should be able to:
+
+* Get students
+* Get alumni
+* Get individual profile
+* Filter by session
+* Sort by roll
+* Search profiles (name, student ID, roll)
+
+Public APIs must expose only information intended for public viewing (i.e., exclude nothing listed in "Profile Data" — all listed fields are intended to be public, since there's no separate private/public field distinction defined).
+
+**Checkpoint: wait for approval before Phase 5 (Authorization & Security testing).**
+
+---
+
+# BACKEND PERMISSION MATRIX
+
+| Action              | Visitor | Approved User | Admin |
+| ------------------- | ------: | -------------: | ----: |
+| View Students       |       ✓ |              ✓ |     ✓ |
+| View Alumni         |       ✓ |              ✓ |     ✓ |
+| Search/Filter       |       ✓ |              ✓ |     ✓ |
+| View Profile        |       ✓ |              ✓ |     ✓ |
+| Register            |       ✓ |              — |     — |
+| Login               |       — |              ✓ |     ✓ |
+| Add Student         |       — |              ✓ |     ✓ |
+| Add Alumni          |       — |              ✓ |     ✓ |
+| Update Any Profile  |       — |              ✓ |     ✓ |
+| Delete Profile      |       — |              — |     ✓ |
+| Approve/Reject User |       — |              — |     ✓ |
+| Manage Users        |       — |              — |     ✓ |
+
+Implement these permissions at both the RLS layer and the API/route layer.
+
+---
+
+# PROFILE MANAGEMENT
+
+When an Approved User or Admin creates a profile:
+
+`Created by = currently authenticated user` (resolved server-side)
+
+When an Approved User or Admin updates a profile (regardless of who created it):
+
+`Updated by = currently authenticated user` (resolved server-side)
+
+Never allow the frontend to freely submit arbitrary `created_by` or `updated_by` values. The backend must determine these values from the authenticated session, always.
+
+---
+
+# PHASE 5 — FRONTEND
+
+Only after the backend is fully functional and tested should frontend development begin. Never build frontend functionality against fake/mock APIs once the backend is available.
+
+The frontend should be **minimal but premium**, feeling like an official modern university department platform.
+
+**Checkpoint: after backend testing is approved, confirm before starting frontend.**
+
+---
+
+# VISUAL DESIGN DIRECTION
+
+**Minimal + Premium + Academic + Modern**
+
+Use a restrained and sophisticated color palette:
+
+* One primary brand color
+* Neutral backgrounds
+* Neutral text colors
+* One subtle accent color
+
+Avoid:
+
+* Rainbow gradients
+* Excessive glassmorphism
+* Neon colors
+* Excessive shadows
+* Overly decorative backgrounds
+* Too many cards
+* Excessive rounded elements
+* Visual clutter
+
+The interface should look premium because of typography, spacing, alignment, color balance, component consistency, and subtle animation — not decoration.
+
+---
+
+# ANIMATIONS
+
+Use **Framer Motion**. Animations should be smooth, subtle, fast, purposeful.
+
+Use for: page transitions, profile card entrance, directory filtering, modal/dialog appearance, hover interactions, navigation transitions, dashboard elements.
+
+Do NOT animate everything.
+
+---
+
+# FRONTEND PAGES
+
+## 1. Home Page
+
+Minimal introduction to:
+
+**Department of Computer Science & Engineering
+Gopalganj Science and Technology University**
+
+Include: short introduction, student count, alumni count, current student CTA, alumni CTA, search/discover directory.
+
+---
+
+## 2. Student Directory
+
+All current students. Search, session filter, roll sorting, profile cards, Active Student badge.
+
+---
+
+## 3. Alumni Directory
+
+All alumni. Search, session filter, roll sorting, Alumni badge, profile cards.
+
+---
+
+## 4. Individual Profile
+
+Sections:
+
+### Identity
+Name, Student ID, Roll, Session, Status badge, Profile picture
+
+### Contact
+Phone, Social profiles (only render fields that are actually filled in — don't show empty rows)
+
+### Career
+Job status, Workplace, Workplace details
+
+### Location
+Home district, Hometown, Current city
+
+### Education
+School, College
+
+At the bottom or in an appropriate subtle location:
+
+**Created by: [Name]**
+**Updated by: [Name]** — only shown if the profile has actually been updated by someone (i.e., `updated_by`/`updated_at` differ meaningfully from creation).
+
+---
+
+## 5. Registration Page
+
+Name, Email, Student ID, Password.
+
+On submit: **"Registration successful. Your account is waiting for admin approval."**
+
+Client-side + server-side validation: valid email format, password minimum length (8 chars), Student ID format check.
+
+---
+
+## 6. Login Page
+
+Email, Password, Login. Pending users get the appropriate waiting-for-approval message.
+
+---
+
+## 7. Approved User Dashboard
+
+* View their account
+* Add Student
+* Add Alumni
+* Manage (edit) any existing student/alumni profile — not restricted to ones they created
+
+Keep it simple — no analytics.
+
+---
+
+## 8. Admin Dashboard
+
+### Pending Approvals
+Name, Email, Student ID, Registration date, Approve / Reject
+
+### User Management
+Show approved users
+
+### Student/Alumni Management
+Search, Filter, Add, Edit, Remove (delete is admin-only)
+
+---
+
+# RESPONSIVE DESIGN
+
+Must work properly on Mobile, Tablet, Laptop, Desktop. Directory and profile pages must remain easy to use on mobile.
+
+---
+
+# WHAT NOT TO BUILD
+
+This project should intentionally NOT include:
+
+* Messaging
+* Chat
+* Job portal
+* Mentorship system
+* Notifications
+* Event management
+* Donations
+* Alumni networking system
+* Complex analytics
+* Recommendation system
+* AI features
+* Social feed
+* Comments
+* Likes
+* Complex activity logs / version history / changelogs
+* Multiple user roles beyond Admin and Approved User
+* Rejected-user history/audit trail
+
+Keep the product focused.
+
+---
+
+# FINAL IMPLEMENTATION ORDER (with checkpoints)
+
+1. System Architecture → **[approval checkpoint]**
+2. Database Design & Implementation → **[approval checkpoint]**
+3. Database Testing & Verification → **[approval checkpoint]**
+4. Backend Architecture & API Design
+5. Authentication & Approval System
+6. Backend APIs
+7. Authorization & Security (RLS + server checks)
+8. Backend Testing → **[approval checkpoint]**
+9. Frontend Architecture
+10. Design System
+11. Public Directory
+12. Profile Pages
+13. Registration & Login
+14. Approved User Dashboard
+15. Admin Dashboard → **[approval checkpoint before animations pass]**
+16. Framer Motion Animations
+17. Responsive Optimization
+18. Complete System Testing → **[approval checkpoint]**
+19. Production Deployment
+
+---
+
+# CRITICAL RULES
+
+1. Do not over-engineer the project.
+2. Do not add features outside the requirements.
+3. Build Architecture first.
+4. Build Database second.
+5. Build Backend third.
+6. Build Frontend last.
+7. Never build frontend functionality against fake/mock APIs once the backend is available.
+8. Never trust frontend authorization — every protected action is verified server-side (RLS + API route checks).
+9. Keep the UI minimal and premium.
+10. Use Framer Motion for subtle, meaningful animations only.
+11. Keep the color palette restrained.
+12. Maintain clean and readable code.
+13. **Stop at every checkpoint listed above and wait for explicit approval before continuing.**
+14. Test every phase before moving to the next phase.
+15. Prioritize correctness and simplicity over unnecessary features.
+16. Use the fixed tech stack (Next.js 15, TypeScript, Tailwind, shadcn/ui, Framer Motion, Supabase) — do not substitute without asking first.
+
+The final result should be a **simple, production-quality Student & Alumni Directory specifically for the CSE Department of Gopalganj Science and Technology University**, with a strong focus on data accuracy, easy browsing, controlled data entry, and a polished premium interface.

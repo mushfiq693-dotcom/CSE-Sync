@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cream to Muted Gold Gradient Theme — Minimal + Premium + Academic */
+    --background: 38 35% 97%;        /* Soft Warm Cream #FAF8F4 */
+    --foreground: 24 12% 12%;        /* Deep Espresso Charcoal #1F1D1B (WCAG AAA Contrast > 17:1) */
+
+    --card: 0 0% 100%;               /* Crisp Warm White Card #FFFFFF */
+    --card-foreground: 24 12% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 12% 12%;
+
+    --primary: 36 78% 38%;           /* Burnished Academic Gold #A86E0B */
+    --primary-foreground: 0 0% 100%; /* Pure White */
+
+    --secondary: 38 25% 92%;         /* Soft Linen Beige Pill #EDE5D8 */
+    --secondary-foreground: 24 12% 15%;
+
+    --muted: 38 20% 93%;             /* Warm Cream Muted #EFE9DF */
+    --muted-foreground: 30 8% 40%;   /* High-contrast Warm Taupe #6B635A (WCAG AA > 5.0:1) */
+
+    --accent: 38 30% 90%;            /* Subtle Champagne Tint #EAE0CF */
+    --accent-foreground: 24 12% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 38 20% 86%;            /* Fine Champagne Border #DED5C3 */
+    --input: 38 20% 86%;
+    --ring: 36 78% 38%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 38 35% 97%;
+    --foreground: 24 12% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 24 12% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 12% 12%;
+    --primary: 36 78% 38%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 25% 92%;
+    --secondary-foreground: 24 12% 15%;
+    --muted: 38 20% 93%;
+    --muted-foreground: 30 8% 40%;
+    --accent: 38 30% 90%;
+    --accent-foreground: 24 12% 12%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 38 20% 86%;
+    --input: 38 20% 86%;
+    --ring: 36 78% 38%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-image: radial-gradient(at 0% 0%, rgba(230, 205, 155, 0.35) 0px, transparent 55%),
+                      radial-gradient(at 100% 100%, rgba(215, 185, 130, 0.25) 0px, transparent 50%),
+                      linear-gradient(180deg, #FAF8F4 0%, #F4ECE0 50%, #EBDCC6 100%);
+    background-attachment: fixed;
+  }
+}
+
+/* Glassmorphic panel for Cream & Muted Gold theme */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(222, 213, 195, 0.8);
+}
