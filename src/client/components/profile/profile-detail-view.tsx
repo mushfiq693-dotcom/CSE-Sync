@@ -21,7 +21,6 @@ import {
   UserCheck,
 } from 'lucide-react';
 import type { ProfileRecord } from '@/server/db/schema.types';
-import { formatRoll } from '@/client/lib/utils';
 
 interface ProfileDetailViewProps {
   profile: ProfileRecord;
@@ -87,14 +86,10 @@ export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
             </div>
 
             {/* Identity Quick Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-border/70">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 pt-6 border-t border-border/70">
               <div className="bg-background/80 p-3 rounded-lg border border-border/50">
                 <span className="text-[11px] font-semibold text-muted-foreground uppercase">Student ID</span>
                 <p className="text-base font-bold text-foreground mt-0.5">{profile.student_id}</p>
-              </div>
-              <div className="bg-background/80 p-3 rounded-lg border border-border/50">
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase">Roll Number</span>
-                <p className="text-base font-bold text-foreground mt-0.5">{formatRoll(profile.roll_number)}</p>
               </div>
               <div className="bg-background/80 p-3 rounded-lg border border-border/50">
                 <span className="text-[11px] font-semibold text-muted-foreground uppercase">Batch / Session</span>

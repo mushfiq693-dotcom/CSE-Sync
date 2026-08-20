@@ -15,11 +15,6 @@ export const profileSchema = z.object({
     .min(3, 'Student ID must be at least 3 characters')
     .max(50, 'Student ID cannot exceed 50 characters')
     .trim(),
-  roll_number: z
-    .coerce
-    .number()
-    .int('Roll number must be an integer')
-    .positive('Roll number must be greater than 0'),
   profile_type: z.enum(['student', 'alumni'], {
     errorMap: () => ({ message: 'Profile type must be either student or alumni' }),
   }),

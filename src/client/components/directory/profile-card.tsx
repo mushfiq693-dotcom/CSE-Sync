@@ -4,7 +4,6 @@ import { Badge } from '@/client/components/ui/badge';
 import { Avatar } from '@/client/components/ui/avatar';
 import { Briefcase, MapPin, ArrowRight, Phone, Linkedin, Facebook } from 'lucide-react';
 import type { ProfileRecord } from '@/server/db/schema.types';
-import { formatRoll } from '@/client/lib/utils';
 
 interface ProfileCardProps {
   profile: ProfileRecord;
@@ -42,9 +41,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             </h3>
             
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-              <span>ID: <strong className="font-medium text-foreground">{profile.student_id}</strong></span>
-              <span>•</span>
-              <span>Roll: <strong className="font-medium text-foreground">{formatRoll(profile.roll_number)}</strong></span>
+              <span>Student ID: <strong className="font-medium text-foreground">{profile.student_id}</strong></span>
             </div>
           </div>
         </div>

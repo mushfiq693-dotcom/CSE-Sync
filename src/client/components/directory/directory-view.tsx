@@ -34,17 +34,16 @@ export function DirectoryView({
         return false;
       }
 
-      // 2. Search Filter (Name, Student ID, or Roll Number)
+      // 2. Search Filter (Name or Student ID)
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase().trim();
         const matchesName = p.full_name.toLowerCase().includes(query);
         const matchesId = p.student_id.toLowerCase().includes(query);
-        const matchesRoll = String(p.roll_number).includes(query);
-        return matchesName || matchesId || matchesRoll;
+        return matchesName || matchesId;
       }
 
       return true;
-    }).sort((a, b) => a.roll_number - b.roll_number);
+    }).sort((a, b) => a.student_id.localeCompare(b.student_id, undefined, { numeric: true }));
   }, [initialProfiles, selectedSession, searchTerm]);
 
   return (
@@ -68,7 +67,7 @@ export function DirectoryView({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search by name, student ID, or roll..."
+            placeholder="Search by name or student ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9 pr-8"
@@ -94,7 +93,9 @@ export function DirectoryView({
             aria-label="Filter by Batch / Session"
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-medium"
           >
-            <option value="all">All Batches</option>
+            <option value="all">
+              {type === 'student' ? 'All Active Batches (CSE 11–15)' : 'All Alumni Batches (CSE 01–10)'}
+            </option>
             {sessions.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.label}
@@ -112,7 +113,7 @@ export function DirectoryView({
           Showing <strong className="text-foreground">{filteredProfiles.length}</strong> {type === 'student' ? 'students' : 'alumni'}
         </span>
         <span className="flex items-center gap-1 font-medium">
-          <ArrowDown01 className="h-3.5 w-3.5 text-primary" /> Sorted by Roll Number
+          <ArrowDown01 className="h-3.5 w-3.5 text-primary" /> Sorted by Student ID
         </span>
       </div>
 

@@ -4,9 +4,10 @@ import * as React from 'react';
 import { Dialog } from '@/client/components/ui/dialog';
 import { Button } from '@/client/components/ui/button';
 import { Input } from '@/client/components/ui/input';
-import { createProfileAction, updateProfileAction } from '@/server/actions/profile.actions';
+import { Avatar } from '@/client/components/ui/avatar';
+import { createProfileAction, updateProfileAction, uploadAvatarAction } from '@/server/actions/profile.actions';
 import type { ProfileRecord, SessionRecord } from '@/server/db/schema.types';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Upload, X, Link as LinkIcon } from 'lucide-react';
 
 interface ProfileFormDialogProps {
   isOpen: boolean;
@@ -29,12 +30,53 @@ export function ProfileFormDialog({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
+  // Avatar upload & preview state
+  const [avatarUrl, setAvatarUrl] = React.useState<string>(initialData?.avatar_url || '');
+  const [isUploadingAvatar, setIsUploadingAvatar] = React.useState(false);
+  const [avatarUploadError, setAvatarUploadError] = React.useState<string | null>(null);
+  const [showUrlInput, setShowUrlInput] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  React.useEffect(() => {
+    setAvatarUrl(initialData?.avatar_url || '');
+    setAvatarUploadError(null);
+    setErrorMessage(null);
+  }, [initialData, isOpen]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingAvatar(true);
+    setAvatarUploadError(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const result = await uploadAvatarAction(formData);
+      if (result.success && result.url) {
+        setAvatarUrl(result.url);
+      } else {
+        setAvatarUploadError(result.error || 'Failed to upload photo.');
+      }
+    } catch (err: any) {
+      setAvatarUploadError(err.message || 'Error uploading photo.');
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
 
     const formData = new FormData(e.currentTarget);
+    formData.set('avatar_url', avatarUrl.trim());
 
     try {
       let result;
@@ -110,33 +152,38 @@ export function ProfileFormDialog({
 
             <div>
               <label className="block text-xs font-semibold text-foreground mb-1">
-                Roll Number <span className="text-destructive">*</span>
-              </label>
-              <Input
-                type="number"
-                name="roll_number"
-                defaultValue={initialData?.roll_number || ''}
-                placeholder="e.g. 1"
-                required
-                min="1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-foreground mb-1">
                 Session / Batch <span className="text-destructive">*</span>
               </label>
               <select
                 name="session_id"
-                defaultValue={initialData?.session_id || sessions[0]?.id || ''}
+                defaultValue={initialData?.session_id || (defaultType === 'student' ? sessions.find(s => s.sort_order >= 11)?.id : sessions[0]?.id) || ''}
                 required
-                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-medium"
               >
-                {sessions.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.label}
-                  </option>
-                ))}
+                {sessions.some(s => s.sort_order >= 11 && s.sort_order <= 15) ? (
+                  <>
+                    <optgroup label="Active Batches (CSE 11 – CSE 15)">
+                      {sessions.filter(s => s.sort_order >= 11 && s.sort_order <= 15).map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.label} (Active)
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Alumni Batches (CSE 01 – CSE 10)">
+                      {sessions.filter(s => s.sort_order >= 1 && s.sort_order <= 10).map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.label} (Alumni)
+                        </option>
+                      ))}
+                    </optgroup>
+                  </>
+                ) : (
+                  sessions.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 
@@ -155,16 +202,110 @@ export function ProfileFormDialog({
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-foreground mb-1">
-                Profile Picture URL (Optional)
+            {/* Profile Picture Upload & Preview Component */}
+            <div className="sm:col-span-2 pt-2 pb-1 border-t border-border/60">
+              <label className="block text-xs font-semibold text-foreground mb-2">
+                Profile Photo (Optional)
               </label>
-              <Input
-                name="avatar_url"
-                type="url"
-                defaultValue={initialData?.avatar_url || ''}
-                placeholder="https://..."
-              />
+
+              <div className="flex items-center gap-4 bg-muted/20 p-3 rounded-xl border border-border/80">
+                {/* Circular Avatar Preview */}
+                <Avatar
+                  src={avatarUrl}
+                  fallbackText="User"
+                  size="lg"
+                  className="border-2 border-primary/20 bg-card shrink-0 shadow-sm"
+                />
+
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Hidden Native File Input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="avatar-file-input"
+                    />
+
+                    {/* Choose from device button */}
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={isUploadingAvatar}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="gap-1.5 text-xs font-semibold shadow-sm"
+                    >
+                      {isUploadingAvatar ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          Uploading Photo...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-3.5 w-3.5" />
+                          Upload from Device
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Or paste link toggle */}
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowUrlInput(!showUrlInput)}
+                      className="gap-1 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <LinkIcon className="h-3.5 w-3.5" />
+                      {showUrlInput ? 'Hide URL Box' : 'Paste Image Link'}
+                    </Button>
+
+                    {/* Remove photo button */}
+                    {avatarUrl && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setAvatarUrl('')}
+                        className="gap-1 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Optional Direct URL Input Field */}
+                  {showUrlInput && (
+                    <div className="pt-1">
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/photo.jpg"
+                        value={avatarUrl}
+                        onChange={(e) => setAvatarUrl(e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                  )}
+
+                  {avatarUploadError && (
+                    <p className="text-[11px] text-destructive font-medium flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {avatarUploadError}
+                    </p>
+                  )}
+                  
+                  <p className="text-[11px] text-muted-foreground">
+                    Upload image from device or paste a web link. Supported: JPG, PNG, WebP (Max 5MB).
+                  </p>
+                </div>
+              </div>
+
+              {/* Hidden input to pass value in form submission */}
+              <input type="hidden" name="avatar_url" value={avatarUrl} />
             </div>
           </div>
         </div>

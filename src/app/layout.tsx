@@ -3,6 +3,8 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/client/components/layout/navbar';
 import { Footer } from '@/client/components/layout/footer';
+import { DeveloperBadge } from '@/client/components/ui/developer-badge';
+import { AuthService } from '@/server/services/auth.service';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -24,11 +26,18 @@ export const metadata: Metadata = {
     'Official Student & Alumni Directory for the Department of Computer Science and Engineering, Gopalganj Science and Technology University (GSTU).',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  let currentUser = null;
+  try {
+    currentUser = await AuthService.getCurrentUser();
+  } catch {
+    currentUser = null;
+  }
+
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground antialiased selection:bg-primary/20 selection:text-foreground relative overflow-x-hidden">
@@ -38,11 +47,12 @@ export default function RootLayout({
           <div className="absolute top-[650px] -right-36 w-[600px] h-[600px] bg-gradient-to-bl from-amber-200/25 via-amber-100/20 to-transparent blur-[150px] rounded-full" />
         </div>
 
-        <Navbar />
+        <Navbar currentUser={currentUser} />
         <main className="flex-1 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {children}
         </main>
         <Footer />
+        <DeveloperBadge />
       </body>
     </html>
   );

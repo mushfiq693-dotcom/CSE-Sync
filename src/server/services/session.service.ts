@@ -11,19 +11,24 @@ export class SessionService {
    * Fetches all sessions/batches ordered by sort_order. Publicly accessible.
    */
   static async getSessions(): Promise<SessionRecord[]> {
-    const supabase = await createSupabaseServerClient();
+    try {
+      const supabase = await createSupabaseServerClient();
 
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .order('sort_order', { ascending: true });
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .order('sort_order', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching sessions:', error);
+      if (error) {
+        console.error('Error fetching sessions:', error.message || error);
+        return [];
+      }
+
+      return (data as unknown as SessionRecord[]) || [];
+    } catch (err: any) {
+      console.error('Unexpected error fetching sessions:', err.message || err);
       return [];
     }
-
-    return (data as unknown as SessionRecord[]) || [];
   }
 
   /**

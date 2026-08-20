@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name VARCHAR(255) NOT NULL,
     student_id VARCHAR(50) NOT NULL,
-    roll_number INT NOT NULL,
     profile_type profile_type NOT NULL, -- 'student' | 'alumni'
     session_id UUID NOT NULL REFERENCES public.sessions(id) ON DELETE RESTRICT,
     
@@ -72,14 +71,12 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
     -- Constraints (Strictly per requirements)
-    -- 1. Student ID is unique within its own role category (student vs alumni)
-    CONSTRAINT unique_student_id_per_profile_type UNIQUE (student_id, profile_type),
-    -- 2. Roll number is unique within a given session
-    CONSTRAINT unique_roll_per_session UNIQUE (session_id, roll_number)
+    -- Student ID is unique within its own role category (student vs alumni)
+    CONSTRAINT unique_student_id_per_profile_type UNIQUE (student_id, profile_type)
 );
 
--- Performance Indexes for search, filter & numeric roll sorting
-CREATE INDEX IF NOT EXISTS idx_profiles_session_roll ON public.profiles (session_id, roll_number ASC);
+-- Performance Indexes for search, filter & Student ID sorting
+CREATE INDEX IF NOT EXISTS idx_profiles_session_student_id ON public.profiles (session_id, student_id ASC);
 CREATE INDEX IF NOT EXISTS idx_profiles_type ON public.profiles (profile_type);
 CREATE INDEX IF NOT EXISTS idx_profiles_name ON public.profiles (full_name);
 CREATE INDEX IF NOT EXISTS idx_profiles_student_id ON public.profiles (student_id);

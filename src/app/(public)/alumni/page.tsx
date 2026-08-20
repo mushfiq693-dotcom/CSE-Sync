@@ -25,13 +25,15 @@ export default async function AlumniPage() {
     console.error('Failed to load alumni directory:', error);
   }
 
+  const alumniSessions = sessions.filter((s) => s.sort_order <= 10);
+
   return (
     <DirectoryView
       initialProfiles={initialProfiles}
-      sessions={sessions}
+      sessions={alumniSessions.length > 0 ? alumniSessions : sessions}
       type="alumni"
       title="Graduated Alumni Directory"
-      subtitle="Connecting past graduates of the Department of Computer Science & Engineering, GSTU across different sessions, industries, and locations worldwide."
+      subtitle="Connecting graduated alumni of the Department of Computer Science & Engineering, GSTU across batches CSE 01 – CSE 10, industries, and locations worldwide."
     />
   );
 }

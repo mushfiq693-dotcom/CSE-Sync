@@ -29,7 +29,6 @@ export interface ProfileRecord {
   id: string;
   full_name: string;
   student_id: string;
-  roll_number: number;
   profile_type: ProfileType;
   session_id: string;
   
@@ -123,7 +122,6 @@ export interface Database {
           id?: string;
           full_name: string;
           student_id: string;
-          roll_number: number;
           profile_type: ProfileType;
           session_id: string;
           avatar_url?: string | null;
@@ -148,7 +146,6 @@ export interface Database {
           id?: string;
           full_name?: string;
           student_id?: string;
-          roll_number?: number;
           profile_type?: ProfileType;
           session_id?: string;
           avatar_url?: string | null;

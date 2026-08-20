@@ -7,7 +7,6 @@ import { Input } from '@/client/components/ui/input';
 import { deleteProfileAction } from '@/server/actions/profile.actions';
 import { ProfileFormDialog } from './profile-form-dialog';
 import type { ProfileRecord, SessionRecord } from '@/server/db/schema.types';
-import { formatRoll } from '@/client/lib/utils';
 import { Search, Edit3, Trash2, Loader2, Plus } from 'lucide-react';
 
 interface DirectoryAdminTableProps {
@@ -33,11 +32,10 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
         const query = searchTerm.toLowerCase().trim();
         const matchesName = p.full_name.toLowerCase().includes(query);
         const matchesId = p.student_id.toLowerCase().includes(query);
-        const matchesRoll = String(p.roll_number).includes(query);
-        return matchesName || matchesId || matchesRoll;
+        return matchesName || matchesId;
       }
       return true;
-    }).sort((a, b) => a.roll_number - b.roll_number);
+    }).sort((a, b) => a.student_id.localeCompare(b.student_id, undefined, { numeric: true }));
   }, [profiles, selectedSession, searchTerm]);
 
   const handleDelete = async (profileId: string, name: string) => {
@@ -58,27 +56,47 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
       {/* Top Search & Actions Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-2">
-          <div className="relative flex-1">
+          <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search directory by name, ID, or roll..."
+              type="text"
+              placeholder="Search directory by name or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-9"
+              className="pl-9"
             />
           </div>
+
           <select
             value={selectedSession}
             onChange={(e) => setSelectedSession(e.target.value)}
-            aria-label="Filter by Batch / Session"
-            className="h-9 rounded-md border border-input bg-background px-3 text-xs shadow-sm font-medium"
+            className="h-9 rounded-md border border-input bg-background px-3 text-xs font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="all">All Batches</option>
-            {sessions.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
+            <option value="all">All Batches (15)</option>
+            {sessions.some((s) => s.sort_order >= 11 && s.sort_order <= 15) ? (
+              <>
+                <optgroup label="Active Batches (CSE 11–15)">
+                  {sessions.filter((s) => s.sort_order >= 11 && s.sort_order <= 15).map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label} (Active)
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Alumni Batches (CSE 01–10)">
+                  {sessions.filter((s) => s.sort_order >= 1 && s.sort_order <= 10).map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label} (Alumni)
+                    </option>
+                  ))}
+                </optgroup>
+              </>
+            ) : (
+              sessions.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))
+            )}
           </select>
         </div>
 
@@ -89,10 +107,11 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
               setCreateType('student');
               setIsCreateModalOpen(true);
             }}
-            className="gap-1 text-xs"
+            className="gap-1.5 font-semibold shadow-sm text-xs"
           >
             <Plus className="h-3.5 w-3.5" /> Add Student
           </Button>
+
           <Button
             size="sm"
             variant="outline"
@@ -100,7 +119,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
               setCreateType('alumni');
               setIsCreateModalOpen(true);
             }}
-            className="gap-1 text-xs"
+            className="gap-1.5 font-semibold text-xs border-border"
           >
             <Plus className="h-3.5 w-3.5" /> Add Alumni
           </Button>
@@ -112,9 +131,8 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border bg-muted/40 text-xs font-bold uppercase text-muted-foreground">
             <tr>
-              <th className="px-4 py-3">Roll</th>
-              <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Student ID</th>
+              <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Batch</th>
               <th className="px-4 py-3">Workplace</th>
@@ -128,9 +146,8 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
                 const isDeleting = deletingId === p.id;
                 return (
                   <tr key={p.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-3 font-bold text-primary">{formatRoll(p.roll_number)}</td>
+                    <td className="px-4 py-3 font-bold text-primary">{p.student_id}</td>
                     <td className="px-4 py-3 font-semibold text-foreground">{p.full_name}</td>
-                    <td className="px-4 py-3 text-muted-foreground font-medium">{p.student_id}</td>
                     <td className="px-4 py-3">
                       <Badge variant={isStudent ? 'student' : 'alumni'} className="text-[10px] uppercase">
                         {isStudent ? 'Student' : 'Alumni'}

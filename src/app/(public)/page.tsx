@@ -117,7 +117,7 @@ export default async function HomePage() {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Academic Batches</p>
                 <h3 className="text-2xl font-black text-foreground">
-                  {sessionsCount || '8'} Sessions
+                  {sessionsCount || '15'} Batches
                 </h3>
               </div>
             </CardContent>
@@ -135,7 +135,7 @@ export default async function HomePage() {
               <Search className="h-4 w-4 text-primary" /> Instant Discovery
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Fast filtering by academic batch, numeric roll sorting, and multi-field search by name and student ID.
+              Fast filtering by academic batch, Student ID sorting, and instant search by name or ID.
             </p>
           </div>
 

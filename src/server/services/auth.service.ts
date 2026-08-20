@@ -2,25 +2,24 @@
 // GSTU CSE Directory — Authentication Service
 // ==============================================================================
 
-import { createSupabaseServerClient } from '../db/supabase-server';
+import { createSupabaseServerClient, getSupabaseAdminClient } from '../db/supabase-server';
 import type { RegisterInput, LoginInput } from '../validations/auth.validation';
 import type { UserProfileRecord } from '../db/schema.types';
 
 export class AuthService {
   /**
-   * Registers a new user with pending status.
+   * Registers a new user with pending status and auto-confirmed email.
    */
   static async signUp(input: RegisterInput) {
-    const supabase = await createSupabaseServerClient();
+    const adminClient = getSupabaseAdminClient();
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await adminClient.auth.admin.createUser({
       email: input.email,
       password: input.password,
-      options: {
-        data: {
-          name: input.name,
-          student_id: input.student_id,
-        },
+      email_confirm: true,
+      user_metadata: {
+        name: input.name,
+        student_id: input.student_id,
       },
     });
 

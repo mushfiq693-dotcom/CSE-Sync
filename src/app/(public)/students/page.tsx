@@ -25,13 +25,15 @@ export default async function StudentsPage() {
     console.error('Failed to load students directory:', error);
   }
 
+  const activeSessions = sessions.filter((s) => s.sort_order >= 11 && s.sort_order <= 15);
+
   return (
     <DirectoryView
       initialProfiles={initialProfiles}
-      sessions={sessions}
+      sessions={activeSessions.length > 0 ? activeSessions : sessions}
       type="student"
       title="Current Students Directory"
-      subtitle="Comprehensive list of enrolled undergraduate students in the Department of Computer Science & Engineering, GSTU. Filter by batch or search by name, ID, or roll."
+      subtitle="Comprehensive list of enrolled undergraduate students in the Department of Computer Science & Engineering, GSTU. Filter by active batch (CSE 11 – CSE 15) or search by name or Student ID."
     />
   );
 }
