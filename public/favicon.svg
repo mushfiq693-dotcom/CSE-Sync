@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C2871A" />
+      <stop offset="100%" stop-color="#784E07" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#grad)" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5" />
+  <text x="16" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">CSE</text>
+</svg>

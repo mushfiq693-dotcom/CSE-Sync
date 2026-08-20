@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   title: 'GSTU CSE — Student & Alumni Directory',
   description:
     'Official Student & Alumni Directory for the Department of Computer Science and Engineering, Gopalganj Science and Technology University (GSTU).',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default async function RootLayout({

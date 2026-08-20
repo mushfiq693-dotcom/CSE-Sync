@@ -56,18 +56,26 @@ export default async function HomePage() {
 
         {/* Primary Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <Link href="/students">
-            <Button size="lg" className="gap-2 text-base font-semibold shadow-md">
-              <Users className="h-5 w-5" />
-              Explore Current Students
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+          <Link href="/students" className="group">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            >
+              <Users className="h-5 w-5 text-white/90" />
+              <span>Explore Current Students</span>
+              <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
           </Link>
-          <Link href="/alumni">
-            <Button variant="outline" size="lg" className="gap-2 text-base font-semibold border-border">
-              <GraduationCap className="h-5 w-5" />
-              Explore Alumni Directory
-            </Button>
+
+          <Link href="/alumni" className="group">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            >
+              <GraduationCap className="h-5 w-5 text-white/90" />
+              <span>Explore Alumni Directory</span>
+              <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
           </Link>
         </div>
 
