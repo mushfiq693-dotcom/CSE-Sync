@@ -299,7 +299,7 @@ export function ProfileFormDialog({
                   )}
                   
                   <p className="text-[11px] text-muted-foreground">
-                    Upload image from device or paste a web link. Supported: JPG, PNG, WebP (Max 5MB).
+                    Upload image from device or paste a web link. Supported: JPG, PNG, WebP (Max 10MB).
                   </p>
                 </div>
               </div>

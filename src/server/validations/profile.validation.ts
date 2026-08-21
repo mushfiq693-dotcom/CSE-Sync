@@ -4,6 +4,22 @@
 
 import { z } from 'zod';
 
+const sanitizeOptionalUrl = (val: unknown) => {
+  if (typeof val !== 'string') return null;
+  const trimmed = val.trim();
+  if (!trimmed) return null;
+  // If user pasted something like linkedin.com/in/john, auto-prefix https://
+  if (!/^https?:\/\//i.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+  return trimmed;
+};
+
+const optionalUrlField = z.preprocess(
+  sanitizeOptionalUrl,
+  z.string().url('Please provide a valid web URL (e.g. https://...)').optional().nullable().or(z.literal(''))
+);
+
 export const profileSchema = z.object({
   full_name: z
     .string()
@@ -21,11 +37,11 @@ export const profileSchema = z.object({
   session_id: z.string().uuid('Please select a valid session/batch'),
   
   // Optional Visual / Contact info
-  avatar_url: z.string().url('Invalid avatar URL').optional().nullable().or(z.literal('')),
+  avatar_url: optionalUrlField,
   phone: z.string().max(30).optional().nullable().or(z.literal('')),
-  facebook_url: z.string().url('Invalid Facebook URL').optional().nullable().or(z.literal('')),
-  instagram_url: z.string().url('Invalid Instagram URL').optional().nullable().or(z.literal('')),
-  linkedin_url: z.string().url('Invalid LinkedIn URL').optional().nullable().or(z.literal('')),
+  facebook_url: optionalUrlField,
+  instagram_url: optionalUrlField,
+  linkedin_url: optionalUrlField,
 
   // Career Info
   job_status: z.enum(['employed', 'business_owner', 'unemployed', 'teaching', 'other']).default('unemployed'),

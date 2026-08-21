@@ -19,8 +19,8 @@ export async function uploadAvatarAction(formData: FormData) {
       return { success: false, error: 'Please select an image file.' };
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return { success: false, error: 'Image size cannot exceed 5MB.' };
+    if (file.size > 10 * 1024 * 1024) {
+      return { success: false, error: 'Image size cannot exceed 10MB.' };
     }
 
     const adminClient = getSupabaseAdminClient();
@@ -40,7 +40,12 @@ export async function uploadAvatarAction(formData: FormData) {
 
     if (uploadError) {
       console.error('Avatar upload failed:', uploadError);
-      return { success: false, error: uploadError.message };
+      return { 
+        success: false, 
+        error: uploadError.message?.includes('bucket') 
+          ? "Storage bucket 'profile-pictures' not found. Please ensure it is created in Supabase Storage."
+          : (uploadError.message || 'Failed to upload photo to storage.') 
+      };
     }
 
     const { data: urlData } = adminClient.storage
@@ -58,64 +63,92 @@ export async function uploadAvatarAction(formData: FormData) {
 }
 
 export async function createProfileAction(prevState: any, formData: FormData) {
-  const rawData: Record<string, any> = {};
-  formData.forEach((value, key) => {
-    rawData[key] = value === '' ? null : value;
-  });
+  try {
+    const rawData: Record<string, any> = {};
+    formData.forEach((value, key) => {
+      rawData[key] = value === '' ? null : value;
+    });
 
-  const validation = profileSchema.safeParse(rawData);
-  if (!validation.success) {
+    const validation = profileSchema.safeParse(rawData);
+    if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors;
+      const firstError = Object.values(fieldErrors).flat()[0] || 'Please fill in all required fields properly.';
+      return {
+        success: false,
+        errors: fieldErrors,
+        error: firstError,
+      };
+    }
+
+    const result = await ProfileService.createProfile(validation.data);
+    if (result.success) {
+      revalidatePath('/students');
+      revalidatePath('/alumni');
+      revalidatePath('/dashboard/user');
+      revalidatePath('/dashboard/admin');
+    }
+
+    return result;
+  } catch (err: any) {
+    console.error('Create profile error:', err);
     return {
       success: false,
-      errors: validation.error.flatten().fieldErrors,
-      error: 'Please fill in all required fields properly.',
+      error: err.message || 'An unexpected error occurred while creating profile.',
     };
   }
-
-  const result = await ProfileService.createProfile(validation.data);
-  if (result.success) {
-    revalidatePath('/students');
-    revalidatePath('/alumni');
-    revalidatePath('/dashboard/user');
-    revalidatePath('/dashboard/admin');
-  }
-
-  return result;
 }
 
 export async function updateProfileAction(profileId: string, prevState: any, formData: FormData) {
-  const rawData: Record<string, any> = {};
-  formData.forEach((value, key) => {
-    rawData[key] = value === '' ? null : value;
-  });
+  try {
+    const rawData: Record<string, any> = {};
+    formData.forEach((value, key) => {
+      rawData[key] = value === '' ? null : value;
+    });
 
-  const validation = profileSchema.safeParse(rawData);
-  if (!validation.success) {
+    const validation = profileSchema.safeParse(rawData);
+    if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors;
+      const firstError = Object.values(fieldErrors).flat()[0] || 'Please fill in all required fields properly.';
+      return {
+        success: false,
+        errors: fieldErrors,
+        error: firstError,
+      };
+    }
+
+    const result = await ProfileService.updateProfile(profileId, validation.data);
+    if (result.success) {
+      revalidatePath('/students');
+      revalidatePath('/alumni');
+      revalidatePath(`/profile/${profileId}`);
+      revalidatePath('/dashboard/user');
+      revalidatePath('/dashboard/admin');
+    }
+
+    return result;
+  } catch (err: any) {
+    console.error('Update profile error:', err);
     return {
       success: false,
-      errors: validation.error.flatten().fieldErrors,
-      error: 'Please fill in all required fields properly.',
+      error: err.message || 'An unexpected error occurred while updating profile.',
     };
   }
-
-  const result = await ProfileService.updateProfile(profileId, validation.data);
-  if (result.success) {
-    revalidatePath('/students');
-    revalidatePath('/alumni');
-    revalidatePath(`/profile/${profileId}`);
-    revalidatePath('/dashboard/user');
-    revalidatePath('/dashboard/admin');
-  }
-
-  return result;
 }
 
 export async function deleteProfileAction(profileId: string) {
-  const result = await ProfileService.deleteProfile(profileId);
-  if (result.success) {
-    revalidatePath('/students');
-    revalidatePath('/alumni');
-    revalidatePath('/dashboard/admin');
+  try {
+    const result = await ProfileService.deleteProfile(profileId);
+    if (result.success) {
+      revalidatePath('/students');
+      revalidatePath('/alumni');
+      revalidatePath('/dashboard/admin');
+    }
+    return result;
+  } catch (err: any) {
+    console.error('Delete profile error:', err);
+    return {
+      success: false,
+      error: err.message || 'An unexpected error occurred while deleting profile.',
+    };
   }
-  return result;
 }
