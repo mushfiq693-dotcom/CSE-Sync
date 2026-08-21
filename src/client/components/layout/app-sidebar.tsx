@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Shield, MessageSquare, X, ChevronRight } from 'lucide-react';
+import { LayoutGrid, Shield, MessageSquare, X, ChevronRight, LayoutDashboard, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeTogglePill } from '@/client/components/ui/theme-toggle-pill';
 import type { UserProfileRecord } from '@/server/db/schema.types';
@@ -50,17 +50,26 @@ export function AppSidebar({ currentUser }: AppSidebarProps) {
   const navItems = [
     {
       href: '/',
-      label: 'Dashboard',
+      label: 'Home',
       icon: LayoutGrid,
       badge: undefined,
     },
     {
+      href: '/dashboard/user',
+      label: 'Member Dashboard',
+      icon: LayoutDashboard,
+      badge: 'Member',
+    },
+  ];
+
+  if (currentUser?.role === 'admin') {
+    navItems.push({
       href: '/dashboard/admin',
       label: 'Admin Panel',
       icon: Shield,
-      badge: currentUser?.role === 'admin' ? 'Admin' : 'Protected',
-    },
-  ];
+      badge: 'Admin',
+    });
+  }
 
   return (
     <>
