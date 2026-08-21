@@ -19,7 +19,7 @@ export function DeveloperBadge({
   name = 'Mushfiqur Rahman',
   initial = 'M',
   role = 'Full-stack Developer',
-  tagline = 'Architected & developed with modern web standards.',
+  tagline = 'Architected & developed with modern web standards by Mushfiq.',
   portfolioUrl = 'https://portfolio2-8i64o9nca-zeni-n-clan.vercel.app',
   githubUrl = 'https://github.com/mushfiq693-dotcom',
   linkedinUrl = 'https://www.linkedin.com/in/mushfiqur-rahman-9760a8410/',
