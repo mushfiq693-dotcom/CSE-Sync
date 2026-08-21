@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { Button } from '@/client/components/ui/button';
 import { Card, CardContent } from '@/client/components/ui/card';
 import { ProfileService } from '@/server/services/profile.service';
 import { SessionService } from '@/server/services/session.service';
+import { AuthService } from '@/server/services/auth.service';
 import {
   Users,
   GraduationCap,
@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Building2,
   Sparkles,
+  Lock,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -19,6 +20,13 @@ export default async function HomePage() {
   let studentCount = 0;
   let alumniCount = 0;
   let sessionsCount = 0;
+  let currentUser = null;
+
+  try {
+    currentUser = await AuthService.getCurrentUser();
+  } catch {
+    currentUser = null;
+  }
 
   try {
     const students = await ProfileService.getPublicProfiles({ profile_type: 'student' });
@@ -30,6 +38,8 @@ export default async function HomePage() {
   } catch (err) {
     console.warn('Database connection initial check');
   }
+
+  const isAuthenticated = !!currentUser;
 
   return (
     <div className="space-y-16 py-6 sm:py-10">
@@ -43,7 +53,7 @@ export default async function HomePage() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground leading-tight">
-          Department of <span className="text-primary">Computer Science & Engineering</span>
+          Department of <span className="text-primary">Computer Science &amp; Engineering</span>
         </h1>
 
         <p className="text-lg sm:text-xl font-medium text-muted-foreground">
@@ -51,32 +61,66 @@ export default async function HomePage() {
         </p>
 
         <p className="text-base text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed">
-          Welcome to the centralized Student & Alumni Directory. Browse verified profiles of current undergraduate students and alumni across all sessions.
+          Welcome to the centralized Student &amp; Alumni Directory. Browse verified profiles of current undergraduate students and alumni across all sessions.
         </p>
 
         {/* Primary Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <Link href="/students" className="group">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-            >
-              <Users className="h-5 w-5 text-white/90" />
-              <span>Explore Current Students</span>
-              <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              {/* Authenticated: Explore Students */}
+              <Link href="/students" className="group">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                >
+                  <Users className="h-5 w-5 text-white/90" />
+                  <span>Explore Current Students</span>
+                  <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
+                </button>
+              </Link>
 
-          <Link href="/alumni" className="group">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-            >
-              <GraduationCap className="h-5 w-5 text-white/90" />
-              <span>Explore Alumni Directory</span>
-              <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
-          </Link>
+              {/* Authenticated: Explore Alumni */}
+              <Link href="/alumni" className="group">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                >
+                  <GraduationCap className="h-5 w-5 text-white/90" />
+                  <span>Explore Alumni Directory</span>
+                  <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
+                </button>
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* Unauthenticated: Locked with Lock icon on the exact same rich golden gradient styling */}
+              <Link href="/login" className="group">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                  title="Sign In required to explore current students"
+                >
+                  <Lock className="h-4 w-4 text-white/90" />
+                  <span>Explore Current Students</span>
+                  <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
+                </button>
+              </Link>
+
+              {/* Unauthenticated: Locked Alumni */}
+              <Link href="/login" className="group">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                  title="Sign In required to explore alumni directory"
+                >
+                  <Lock className="h-4 w-4 text-white/90" />
+                  <span>Explore Alumni Directory</span>
+                  <ArrowRight className="h-4 w-4 text-white/80 group-hover:translate-x-1 transition-transform duration-200" />
+                </button>
+              </Link>
+            </>
+          )}
         </div>
 
       </section>
@@ -84,7 +128,8 @@ export default async function HomePage() {
       {/* Directory Metrics & Statistics Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
         
-        <Link href="/students" className="group">
+        {/* Current Students Card */}
+        <Link href={isAuthenticated ? '/students' : '/login'} className="group">
           <Card className="hover:border-primary/50 hover:shadow-md transition-all duration-200 bg-card">
             <CardContent className="p-6 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
@@ -100,7 +145,8 @@ export default async function HomePage() {
           </Card>
         </Link>
 
-        <Link href="/alumni" className="group">
+        {/* Graduated Alumni Card */}
+        <Link href={isAuthenticated ? '/alumni' : '/login'} className="group">
           <Card className="hover:border-primary/50 hover:shadow-md transition-all duration-200 bg-card">
             <CardContent className="p-6 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100/70 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
@@ -116,6 +162,7 @@ export default async function HomePage() {
           </Card>
         </Link>
 
+        {/* Academic Batches Card */}
         <div className="group">
           <Card className="bg-card">
             <CardContent className="p-6 flex items-center gap-4">
@@ -158,7 +205,7 @@ export default async function HomePage() {
 
           <div className="space-y-2">
             <div className="flex items-center gap-2 font-bold text-foreground">
-              <Building2 className="h-4 w-4 text-primary" /> Career & Connections
+              <Building2 className="h-4 w-4 text-primary" /> Career &amp; Connections
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Explore alumni employment status, workplace locations, and professional social profiles.

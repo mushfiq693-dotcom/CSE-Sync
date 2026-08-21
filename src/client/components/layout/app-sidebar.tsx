@@ -42,8 +42,8 @@ export function AppSidebar({ currentUser }: AppSidebarProps) {
     };
   }, [isOpen]);
 
-  // The Dashboard floating trigger and drawer is ONLY active on the Home page ('/')
-  if (pathname !== '/') {
+  // Only render the floating Dashboard trigger and drawer if user is SIGNED IN and on the Home page ('/')
+  if (!currentUser || pathname !== '/') {
     return null;
   }
 
@@ -64,7 +64,7 @@ export function AppSidebar({ currentUser }: AppSidebarProps) {
 
   return (
     <>
-      {/* ─── Floating "Dashboard" Trigger Pill: Placed right below the CSE logo on the left (Home Page Only) ─── */}
+      {/* ─── Floating "Dashboard" Trigger Pill: Placed right below the CSE logo on the left (Signed In Users on Home Page Only) ─── */}
       <div className="fixed left-3 sm:left-4 top-[4.75rem] z-40">
         <motion.button
           type="button"
