@@ -15,6 +15,7 @@ interface ProfileFormDialogProps {
   sessions: SessionRecord[];
   initialData?: ProfileRecord | null;
   defaultType?: 'student' | 'alumni';
+  isAdmin?: boolean;
   onSuccess?: () => void;
 }
 
@@ -24,6 +25,7 @@ export function ProfileFormDialog({
   sessions,
   initialData,
   defaultType = 'student',
+  isAdmin = false,
   onSuccess,
 }: ProfileFormDialogProps) {
   const isEditing = !!initialData;
@@ -201,6 +203,27 @@ export function ProfileFormDialog({
                 <option value="alumni">Alumni</option>
               </select>
             </div>
+
+            {/* Admin-only Leadership Designation */}
+            {isAdmin && (
+              <div className="sm:col-span-2 bg-muted/40 p-3 rounded-xl border border-border/80">
+                <label className="block text-xs font-bold text-foreground mb-1">
+                  Batch Leadership Designation (Admin Only)
+                </label>
+                <select
+                  name="leadership_role"
+                  defaultValue={initialData?.leadership_role || ''}
+                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                >
+                  <option value="">None (Standard Member)</option>
+                  <option value="CR">👑 Class Representative (CR) — Pinned to Top</option>
+                  <option value="ACR">🎖️ Assistant Class Representative (ACR) — Pinned to Top</option>
+                </select>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Assigning CR or ACR will pin this profile at the top of their batch and highlight it with official badges.
+                </p>
+              </div>
+            )}
 
             {/* Profile Picture Upload & Preview Component */}
             <div className="sm:col-span-2 pt-2 pb-1 border-t border-border/60">

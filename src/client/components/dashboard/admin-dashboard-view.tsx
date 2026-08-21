@@ -460,6 +460,7 @@ export function AdminDashboardView({
           onClose={() => setIsAddProfileModalOpen(false)}
           sessions={sessions}
           defaultType="student"
+          isAdmin={true}
         />
       )}
 

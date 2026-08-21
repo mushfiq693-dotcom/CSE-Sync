@@ -56,6 +56,9 @@ export const profileSchema = z.object({
   // Pre-university Education
   school: z.string().max(255).optional().nullable().or(z.literal('')),
   college: z.string().max(255).optional().nullable().or(z.literal('')),
+
+  // Batch Leadership (CR / ACR)
+  leadership_role: z.enum(['CR', 'ACR']).optional().nullable().or(z.literal('')),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;

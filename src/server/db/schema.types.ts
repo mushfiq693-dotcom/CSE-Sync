@@ -53,6 +53,9 @@ export interface ProfileRecord {
   school?: string | null;
   college?: string | null;
   
+  // Leadership & Pinned Batch Roles (CR/ACR)
+  leadership_role?: 'CR' | 'ACR' | null;
+
   // Audit fields
   created_by: string;
   updated_by: string;
@@ -137,6 +140,7 @@ export interface Database {
           current_city?: string | null;
           school?: string | null;
           college?: string | null;
+          leadership_role?: 'CR' | 'ACR' | null;
           created_by: string;
           updated_by: string;
           created_at?: string;
@@ -161,6 +165,7 @@ export interface Database {
           current_city?: string | null;
           school?: string | null;
           college?: string | null;
+          leadership_role?: 'CR' | 'ACR' | null;
           created_by?: string;
           updated_by?: string;
           created_at?: string;

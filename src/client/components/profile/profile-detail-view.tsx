@@ -19,6 +19,8 @@ import {
   School,
   ShieldCheck,
   UserCheck,
+  Crown,
+  Award,
 } from 'lucide-react';
 import type { ProfileRecord } from '@/server/db/schema.types';
 
@@ -28,6 +30,8 @@ interface ProfileDetailViewProps {
 
 export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
   const isStudent = profile.profile_type === 'student';
+  const isCR = profile.leadership_role === 'CR';
+  const isACR = profile.leadership_role === 'ACR';
 
   const hasContactInfo = profile.phone || profile.facebook_url || profile.instagram_url || profile.linkedin_url;
   const hasCareerInfo = profile.workplace || profile.workplace_details || profile.job_status !== 'unemployed';
@@ -46,7 +50,7 @@ export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
         <Link href={isStudent ? '/students' : '/alumni'}>
           <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            Back to {isStudent ? 'Current Students' : 'Alumni Directory'}
+            Back to {isStudent ? 'Students Directory' : 'Alumni Directory'}
           </Button>
         </Link>
       </FadeIn>
@@ -64,7 +68,17 @@ export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
                 size="xl"
                 className="border-4 border-card ring-2 ring-border/50 shadow-md bg-card"
               />
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {isCR && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-amber-500 text-white shadow-sm">
+                    <Crown className="h-3.5 w-3.5" /> Class Representative (CR)
+                  </span>
+                )}
+                {isACR && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-blue-600 text-white shadow-sm">
+                    <Award className="h-3.5 w-3.5" /> Assistant CR (ACR)
+                  </span>
+                )}
                 <Badge variant={isStudent ? 'student' : 'alumni'} className="text-xs uppercase px-3 py-1">
                   {isStudent ? 'ACTIVE STUDENT' : 'ALUMNI'}
                 </Badge>

@@ -152,3 +152,22 @@ export async function deleteProfileAction(profileId: string) {
     };
   }
 }
+
+export async function setLeadershipRoleAction(profileId: string, role: 'CR' | 'ACR' | null) {
+  try {
+    const result = await ProfileService.setLeadershipRole(profileId, role);
+    if (result.success) {
+      revalidatePath('/students');
+      revalidatePath('/alumni');
+      revalidatePath(`/profile/${profileId}`);
+      revalidatePath('/dashboard/admin');
+    }
+    return result;
+  } catch (err: any) {
+    console.error('Set leadership role error:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to update leadership role.',
+    };
+  }
+}
