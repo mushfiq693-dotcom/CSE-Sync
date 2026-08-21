@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    /* Cream to Muted Gold Gradient Theme — Minimal + Premium + Academic */
+    /* Cream to Muted Gold Theme — Minimal + Premium + Academic */
     --background: 38 35% 97%;        /* Soft Warm Cream #FAF8F4 */
-    --foreground: 24 12% 12%;        /* Deep Espresso Charcoal #1F1D1B (WCAG AAA Contrast > 17:1) */
+    --foreground: 24 12% 12%;        /* Deep Espresso Charcoal #1F1D1B */
 
     --card: 0 0% 100%;               /* Crisp Warm White Card #FFFFFF */
     --card-foreground: 24 12% 12%;
@@ -21,7 +21,7 @@
     --secondary-foreground: 24 12% 15%;
 
     --muted: 38 20% 93%;             /* Warm Cream Muted #EFE9DF */
-    --muted-foreground: 30 8% 40%;   /* High-contrast Warm Taupe #6B635A (WCAG AA > 5.0:1) */
+    --muted-foreground: 30 8% 40%;   /* High-contrast Warm Taupe #6B635A */
 
     --accent: 38 30% 90%;            /* Subtle Champagne Tint #EAE0CF */
     --accent-foreground: 24 12% 12%;
@@ -37,31 +37,40 @@
   }
 
   .dark {
-    --background: 38 35% 97%;
-    --foreground: 24 12% 12%;
-    --card: 0 0% 100%;
-    --card-foreground: 24 12% 12%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 24 12% 12%;
-    --primary: 36 78% 38%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 38 25% 92%;
-    --secondary-foreground: 24 12% 15%;
-    --muted: 38 20% 93%;
-    --muted-foreground: 30 8% 40%;
-    --accent: 38 30% 90%;
-    --accent-foreground: 24 12% 12%;
-    --destructive: 0 72% 51%;
+    /* Sleek Deep Obsidian & Warm Gold Theme */
+    --background: 240 10% 6%;        /* Deep Obsidian #0F0F12 */
+    --foreground: 40 20% 96%;        /* Cream White #FBF8F3 */
+
+    --card: 240 8% 10%;              /* Dark Glass Card #17171C */
+    --card-foreground: 40 20% 96%;
+
+    --popover: 240 8% 10%;
+    --popover-foreground: 40 20% 96%;
+
+    --primary: 38 88% 50%;           /* Glowing Amber Gold #F59E0B */
+    --primary-foreground: 24 12% 10%;
+
+    --secondary: 240 6% 16%;         /* #24242C */
+    --secondary-foreground: 40 20% 96%;
+
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 240 6% 18%;
+    --accent-foreground: 40 20% 96%;
+
+    --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 98%;
-    --border: 38 20% 86%;
-    --input: 38 20% 86%;
-    --ring: 36 78% 38%;
+
+    --border: 240 6% 18%;            /* Dark subtle border */
+    --input: 240 6% 18%;
+    --ring: 38 88% 50%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-colors duration-150;
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -69,6 +78,14 @@
     background-image: radial-gradient(at 0% 0%, rgba(230, 205, 155, 0.35) 0px, transparent 55%),
                       radial-gradient(at 100% 100%, rgba(215, 185, 130, 0.25) 0px, transparent 50%),
                       linear-gradient(180deg, #FAF8F4 0%, #F4ECE0 50%, #EBDCC6 100%);
+    background-attachment: fixed;
+  }
+
+  .dark body,
+  html.dark body {
+    background-image: radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.12) 0px, transparent 55%),
+                      radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.08) 0px, transparent 50%),
+                      linear-gradient(180deg, #0F0F12 0%, #15151A 50%, #1B1B22 100%);
     background-attachment: fixed;
   }
 }
@@ -79,4 +96,11 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(222, 213, 195, 0.8);
+}
+
+.dark .glass-panel {
+  background: rgba(23, 23, 28, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(45, 45, 55, 0.8);
 }

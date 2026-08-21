@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/client/components/layout/navbar';
 import { Footer } from '@/client/components/layout/footer';
+import { AppSidebar } from '@/client/components/layout/app-sidebar';
 import { DeveloperBadge } from '@/client/components/ui/developer-badge';
 import { AuthService } from '@/server/services/auth.service';
 
@@ -45,18 +46,28 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-background font-sans text-foreground antialiased selection:bg-primary/20 selection:text-foreground relative overflow-x-hidden">
+      <body className="min-h-full flex flex-col bg-background font-sans text-foreground antialiased selection:bg-primary/20 selection:text-foreground relative overflow-x-hidden">
         {/* Soft Champagne & Muted Gold Ambient Glows */}
         <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
           <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-tr from-amber-300/20 via-yellow-200/15 to-transparent blur-[140px] rounded-full" />
           <div className="absolute top-[650px] -right-36 w-[600px] h-[600px] bg-gradient-to-bl from-amber-200/25 via-amber-100/20 to-transparent blur-[150px] rounded-full" />
         </div>
 
+        {/* Top Navbar */}
         <Navbar currentUser={currentUser} />
+
+        {/* Main Content Area - Clean, Perfectly Centered Full Layout */}
         <main className="flex-1 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {children}
         </main>
+
+        {/* Footer */}
         <Footer />
+
+        {/* Floating Animated Dashboard Drawer Sidebar */}
+        <AppSidebar currentUser={currentUser} />
+
+        {/* Developer Attribution Badge */}
         <DeveloperBadge />
       </body>
     </html>
