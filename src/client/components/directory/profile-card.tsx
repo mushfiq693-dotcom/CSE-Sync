@@ -67,10 +67,27 @@ export function ProfileCard({ profile }: ProfileCardProps) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <Badge variant={isStudent ? 'student' : 'alumni'} className="text-[10px] uppercase">
-                {isStudent ? 'Active Student' : 'Alumni'}
-              </Badge>
+            <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1">
+              <div className="flex items-center gap-1.5">
+                <Badge variant={isStudent ? 'student' : 'alumni'} className="text-[10px] uppercase">
+                  {isStudent ? 'Active Student' : 'Alumni'}
+                </Badge>
+                {profile.academic_rank === '1st' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                    🥇 1st
+                  </span>
+                )}
+                {profile.academic_rank === '2nd' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-400/15 text-slate-700 dark:text-slate-300 border border-slate-400/30">
+                    🥈 2nd
+                  </span>
+                )}
+                {profile.academic_rank === '3rd' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-orange-600/15 text-orange-700 dark:text-orange-300 border border-orange-600/30">
+                    🥉 3rd
+                  </span>
+                )}
+              </div>
               {profile.session?.label && (
                 <span className="text-xs font-semibold text-muted-foreground bg-muted/60 px-2 py-0.5 rounded">
                   {profile.session.label}

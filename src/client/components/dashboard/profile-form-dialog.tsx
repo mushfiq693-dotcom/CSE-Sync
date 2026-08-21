@@ -204,23 +204,42 @@ export function ProfileFormDialog({
               </select>
             </div>
 
-            {/* Admin-only Leadership Designation */}
+            {/* Admin-only Leadership & Academic Rank Controls */}
             {isAdmin && (
-              <div className="sm:col-span-2 bg-muted/40 p-3 rounded-xl border border-border/80">
-                <label className="block text-xs font-bold text-foreground mb-1">
-                  Batch Leadership Designation (Admin Only)
-                </label>
-                <select
-                  name="leadership_role"
-                  defaultValue={initialData?.leadership_role || ''}
-                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  <option value="">None (Standard Member)</option>
-                  <option value="CR">👑 Class Representative (CR) — Pinned to Top</option>
-                  <option value="ACR">🎖️ Assistant Class Representative (ACR) — Pinned to Top</option>
-                </select>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  Assigning CR or ACR will pin this profile at the top of their batch and highlight it with official badges.
+              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-muted/40 p-3 rounded-xl border border-border/80">
+                <div>
+                  <label className="block text-xs font-bold text-foreground mb-1">
+                    Batch Leadership (Admin Only)
+                  </label>
+                  <select
+                    name="leadership_role"
+                    defaultValue={initialData?.leadership_role || ''}
+                    className="w-full h-9 rounded-md border border-input bg-background px-3 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-medium"
+                  >
+                    <option value="">None (Standard Member)</option>
+                    <option value="CR">👑 Class Representative (CR)</option>
+                    <option value="ACR">🎖️ Assistant CR (ACR)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-foreground mb-1">
+                    Academic Merit Rank (Admin Only)
+                  </label>
+                  <select
+                    name="academic_rank"
+                    defaultValue={initialData?.academic_rank || ''}
+                    className="w-full h-9 rounded-md border border-input bg-background px-3 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-medium"
+                  >
+                    <option value="">None</option>
+                    <option value="1st">🥇 1st Position</option>
+                    <option value="2nd">🥈 2nd Position</option>
+                    <option value="3rd">🥉 3rd Position</option>
+                  </select>
+                </div>
+
+                <p className="sm:col-span-2 text-[11px] text-muted-foreground">
+                  Leadership roles are pinned to top with ribbons. Academic rank assigns gold/silver/bronze merit badges.
                 </p>
               </div>
             )}

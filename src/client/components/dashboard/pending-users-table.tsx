@@ -66,12 +66,13 @@ export function PendingUsersTable({ pendingUsers }: PendingUsersTableProps) {
                 <td className="px-4 py-3 font-semibold text-foreground">{user.name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
                 <td className="px-4 py-3 font-medium text-foreground">{user.student_id}</td>
-                <td className="px-4 py-3 text-xs text-muted-foreground">
-                  {new Date(user.created_at).toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                <td className="px-4 py-3 text-xs text-muted-foreground" suppressHydrationWarning>
+                  {(() => {
+                    const d = new Date(user.created_at);
+                    if (isNaN(d.getTime())) return user.created_at;
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                  })()}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">

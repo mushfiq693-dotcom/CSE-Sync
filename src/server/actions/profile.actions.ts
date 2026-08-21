@@ -171,3 +171,22 @@ export async function setLeadershipRoleAction(profileId: string, role: 'CR' | 'A
     };
   }
 }
+
+export async function setAcademicRankAction(profileId: string, rank: '1st' | '2nd' | '3rd' | null) {
+  try {
+    const result = await ProfileService.setAcademicRank(profileId, rank);
+    if (result.success) {
+      revalidatePath('/students');
+      revalidatePath('/alumni');
+      revalidatePath(`/profile/${profileId}`);
+      revalidatePath('/dashboard/admin');
+    }
+    return result;
+  } catch (err: any) {
+    console.error('Set academic rank error:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to update academic rank.',
+    };
+  }
+}

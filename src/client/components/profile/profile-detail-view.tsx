@@ -79,6 +79,21 @@ export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
                     <Award className="h-3.5 w-3.5" /> Assistant CR (ACR)
                   </span>
                 )}
+                {profile.academic_rank === '1st' && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 shadow-xs">
+                    🥇 1st Position (Academic Merit)
+                  </span>
+                )}
+                {profile.academic_rank === '2nd' && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-slate-400/20 text-slate-800 dark:text-slate-200 border border-slate-400/40 shadow-xs">
+                    🥈 2nd Position (Academic Merit)
+                  </span>
+                )}
+                {profile.academic_rank === '3rd' && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-orange-600/20 text-orange-800 dark:text-orange-300 border border-orange-600/40 shadow-xs">
+                    🥉 3rd Position (Academic Merit)
+                  </span>
+                )}
                 <Badge variant={isStudent ? 'student' : 'alumni'} className="text-xs uppercase px-3 py-1">
                   {isStudent ? 'ACTIVE STUDENT' : 'ALUMNI'}
                 </Badge>

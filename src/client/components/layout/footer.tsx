@@ -34,7 +34,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border/60 text-center text-xs text-muted-foreground">
+        <div className="mt-8 pt-6 border-t border-border/60 text-center text-xs text-muted-foreground" suppressHydrationWarning>
           © {new Date().getFullYear()} GSTU CSE Department. Official Student &amp; Alumni Directory. All rights reserved.
         </div>
       </div>

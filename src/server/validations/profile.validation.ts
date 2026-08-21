@@ -59,6 +59,9 @@ export const profileSchema = z.object({
 
   // Batch Leadership (CR / ACR)
   leadership_role: z.enum(['CR', 'ACR']).optional().nullable().or(z.literal('')),
+
+  // Academic Merit Ranking (1st, 2nd, 3rd)
+  academic_rank: z.enum(['1st', '2nd', '3rd']).optional().nullable().or(z.literal('')),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;

@@ -4,10 +4,10 @@ import * as React from 'react';
 import { Badge } from '@/client/components/ui/badge';
 import { Button } from '@/client/components/ui/button';
 import { Input } from '@/client/components/ui/input';
-import { deleteProfileAction, setLeadershipRoleAction } from '@/server/actions/profile.actions';
+import { deleteProfileAction, setLeadershipRoleAction, setAcademicRankAction } from '@/server/actions/profile.actions';
 import { ProfileFormDialog } from './profile-form-dialog';
 import type { ProfileRecord, SessionRecord } from '@/server/db/schema.types';
-import { Search, Edit3, Trash2, Loader2, Plus, Crown, Award, Check } from 'lucide-react';
+import { Search, Edit3, Trash2, Loader2, Plus, Crown, Award, Check, Medal } from 'lucide-react';
 import { cn } from '@/client/lib/utils';
 
 interface DirectoryAdminTableProps {
@@ -24,6 +24,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
   const [createType, setCreateType] = React.useState<'student' | 'alumni'>('student');
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
   const [updatingRoleId, setUpdatingRoleId] = React.useState<string | null>(null);
+  const [updatingRankId, setUpdatingRankId] = React.useState<string | null>(null);
 
   const filteredProfiles = React.useMemo(() => {
     return profiles.filter((p) => {
@@ -71,6 +72,18 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
       }
     } finally {
       setUpdatingRoleId(null);
+    }
+  };
+
+  const handleRankChange = async (profileId: string, newRank: '1st' | '2nd' | '3rd' | null) => {
+    setUpdatingRankId(profileId);
+    try {
+      const res = await setAcademicRankAction(profileId, newRank);
+      if (!res.success) {
+        alert(res.error || 'Failed to update academic rank');
+      }
+    } finally {
+      setUpdatingRankId(null);
     }
   };
 
@@ -160,6 +173,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
               <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Batch</th>
               <th className="px-4 py-3">Leadership (CR/ACR)</th>
+              <th className="px-4 py-3">Academic Rank</th>
               <th className="px-4 py-3">Workplace</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -170,6 +184,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
                 const isStudent = p.profile_type === 'student';
                 const isDeleting = deletingId === p.id;
                 const isUpdatingRole = updatingRoleId === p.id;
+                const isUpdatingRank = updatingRankId === p.id;
                 const isCR = p.leadership_role === 'CR';
                 const isACR = p.leadership_role === 'ACR';
 
@@ -193,6 +208,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
                     <td className="px-4 py-3 text-xs font-medium text-muted-foreground">
                       {p.session?.label || 'N/A'}
                     </td>
+                    {/* Leadership Role (CR/ACR) */}
                     <td className="px-4 py-3">
                       {isAdmin ? (
                         <div className="flex items-center gap-1">
@@ -233,6 +249,58 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
                             </span>
                           )}
                           {!isCR && !isACR && <span className="text-xs text-muted-foreground">—</span>}
+                        </div>
+                      )}
+                    </td>
+                    {/* Academic Rank (1st / 2nd / 3rd) */}
+                    <td className="px-4 py-3">
+                      {isAdmin ? (
+                        <div className="flex items-center gap-1">
+                          {isUpdatingRank ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                          ) : (
+                            <select
+                              value={p.academic_rank || 'none'}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                handleRankChange(p.id, val === 'none' ? null : (val as '1st' | '2nd' | '3rd'));
+                              }}
+                              className={cn(
+                                "h-7 rounded text-xs font-semibold px-2 border focus-visible:outline-none cursor-pointer transition-colors",
+                                p.academic_rank === '1st'
+                                  ? "bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500 font-extrabold"
+                                  : p.academic_rank === '2nd'
+                                  ? "bg-slate-300 dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-400 font-extrabold"
+                                  : p.academic_rank === '3rd'
+                                  ? "bg-orange-500/20 text-orange-800 dark:text-orange-300 border-orange-500 font-extrabold"
+                                  : "bg-background text-muted-foreground border-input hover:text-foreground"
+                              )}
+                            >
+                              <option value="none" className="bg-background text-foreground">None</option>
+                              <option value="1st" className="bg-background text-foreground">🥇 1st Position</option>
+                              <option value="2nd" className="bg-background text-foreground">🥈 2nd Position</option>
+                              <option value="3rd" className="bg-background text-foreground">🥉 3rd Position</option>
+                            </select>
+                          )}
+                        </div>
+                      ) : (
+                        <div>
+                          {p.academic_rank === '1st' && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40">
+                              🥇 1st
+                            </span>
+                          )}
+                          {p.academic_rank === '2nd' && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-400/20 text-slate-800 dark:text-slate-200 border border-slate-400/40">
+                              🥈 2nd
+                            </span>
+                          )}
+                          {p.academic_rank === '3rd' && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-600/20 text-orange-800 dark:text-orange-300 border border-orange-600/40">
+                              🥉 3rd
+                            </span>
+                          )}
+                          {!p.academic_rank && <span className="text-xs text-muted-foreground">—</span>}
                         </div>
                       )}
                     </td>

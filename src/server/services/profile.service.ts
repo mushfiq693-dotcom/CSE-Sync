@@ -111,10 +111,11 @@ export class ProfileService {
     const currentUser = await AuthService.requireApprovedUser();
     const supabase = await createSupabaseServerClient();
 
-    // If not admin, strip out leadership_role to prevent self-elevation
+    // If not admin, strip out leadership_role and academic_rank to prevent self-elevation
     const sanitizedInput = { ...input };
     if (currentUser.role !== 'admin') {
       delete (sanitizedInput as any).leadership_role;
+      delete (sanitizedInput as any).academic_rank;
     }
 
     const payload = {
@@ -136,6 +137,9 @@ export class ProfileService {
         if (error.message.includes('unique_batch_leadership')) {
           return { success: false, error: `This batch already has a designated ${input.leadership_role}.` };
         }
+        if (error.message.includes('unique_batch_academic_rank')) {
+          return { success: false, error: `This batch already has a designated ${input.academic_rank} place holder.` };
+        }
       }
       return { success: false, error: error.message };
     }
@@ -153,9 +157,10 @@ export class ProfileService {
     const supabase = await createSupabaseServerClient();
 
     const sanitizedInput = { ...input };
-    // If not admin, do not allow changing leadership_role
+    // If not admin, do not allow changing leadership_role or academic_rank
     if (currentUser.role !== 'admin') {
       delete (sanitizedInput as any).leadership_role;
+      delete (sanitizedInput as any).academic_rank;
     }
 
     const updatePayload = {
@@ -176,6 +181,9 @@ export class ProfileService {
         }
         if (error.message.includes('unique_batch_leadership')) {
           return { success: false, error: `This batch already has a designated ${input.leadership_role}.` };
+        }
+        if (error.message.includes('unique_batch_academic_rank')) {
+          return { success: false, error: `This batch already has a designated ${input.academic_rank} place holder.` };
         }
       }
       return { success: false, error: error.message };
@@ -220,6 +228,44 @@ export class ProfileService {
     }
 
     return { success: true, message: `Successfully updated leadership role.` };
+  }
+
+  /**
+   * Sets or clears the academic merit rank (1st, 2nd, 3rd) for a profile.
+   * Admin-only operation. Automatically clears any existing person with the same rank in that batch.
+   */
+  static async setAcademicRank(profileId: string, rank: '1st' | '2nd' | '3rd' | null) {
+    await AuthService.requireAdmin();
+    const supabase = await createSupabaseServerClient();
+
+    // 1. Fetch current profile to get session_id
+    const { data: targetProfile, error: fetchError } = await (supabase.from('profiles') as any)
+      .select('id, session_id, full_name, academic_rank')
+      .eq('id', profileId)
+      .single();
+
+    if (fetchError || !targetProfile) {
+      return { success: false, error: 'Profile not found.' };
+    }
+
+    // 2. If assigning a new rank ('1st', '2nd' or '3rd'), clear that rank from any other student in the same batch
+    if (rank) {
+      await (supabase.from('profiles') as any)
+        .update({ academic_rank: null })
+        .eq('session_id', targetProfile.session_id)
+        .eq('academic_rank', rank);
+    }
+
+    // 3. Assign rank to target profile
+    const { error: updateError } = await (supabase.from('profiles') as any)
+      .update({ academic_rank: rank })
+      .eq('id', profileId);
+
+    if (updateError) {
+      return { success: false, error: updateError.message };
+    }
+
+    return { success: true, message: `Successfully updated academic rank.` };
   }
 
   /**

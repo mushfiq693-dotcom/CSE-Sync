@@ -56,6 +56,9 @@ export interface ProfileRecord {
   // Leadership & Pinned Batch Roles (CR/ACR)
   leadership_role?: 'CR' | 'ACR' | null;
 
+  // Academic Merit Ranking (1st, 2nd, 3rd)
+  academic_rank?: '1st' | '2nd' | '3rd' | null;
+
   // Audit fields
   created_by: string;
   updated_by: string;
@@ -141,6 +144,7 @@ export interface Database {
           school?: string | null;
           college?: string | null;
           leadership_role?: 'CR' | 'ACR' | null;
+          academic_rank?: '1st' | '2nd' | '3rd' | null;
           created_by: string;
           updated_by: string;
           created_at?: string;
@@ -166,6 +170,7 @@ export interface Database {
           school?: string | null;
           college?: string | null;
           leadership_role?: 'CR' | 'ACR' | null;
+          academic_rank?: '1st' | '2nd' | '3rd' | null;
           created_by?: string;
           updated_by?: string;
           created_at?: string;
