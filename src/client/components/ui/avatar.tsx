@@ -39,6 +39,8 @@ export function Avatar({ src, alt = 'Avatar', fallbackText = 'U', size = 'md', c
         <img
           src={src}
           alt={alt}
+          loading="lazy"
+          decoding="async"
           onError={() => setHasError(true)}
           className="aspect-square h-full w-full object-cover"
         />

@@ -215,6 +215,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 
           <Link
             href={`/profile/${profile.id}`}
+            prefetch={true}
             className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
           >
             View Details

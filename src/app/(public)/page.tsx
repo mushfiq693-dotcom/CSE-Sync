@@ -14,7 +14,7 @@ import {
   Lock,
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function HomePage() {
   let studentCount = 0;
@@ -69,7 +69,7 @@ export default async function HomePage() {
           {isAuthenticated ? (
             <>
               {/* Authenticated: Explore Students */}
-              <Link href="/students" className="group">
+              <Link href="/students" prefetch={true} className="group">
                 <button
                   type="button"
                   className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
@@ -81,7 +81,7 @@ export default async function HomePage() {
               </Link>
 
               {/* Authenticated: Explore Alumni */}
-              <Link href="/alumni" className="group">
+              <Link href="/alumni" prefetch={true} className="group">
                 <button
                   type="button"
                   className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
@@ -95,7 +95,7 @@ export default async function HomePage() {
           ) : (
             <>
               {/* Unauthenticated: Locked with Lock icon on the exact same rich golden gradient styling */}
-              <Link href="/login" className="group">
+              <Link href="/login" prefetch={true} className="group">
                 <button
                   type="button"
                   className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
@@ -108,7 +108,7 @@ export default async function HomePage() {
               </Link>
 
               {/* Unauthenticated: Locked Alumni */}
-              <Link href="/login" className="group">
+              <Link href="/login" prefetch={true} className="group">
                 <button
                   type="button"
                   className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
@@ -129,7 +129,7 @@ export default async function HomePage() {
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
         
         {/* Current Students Card */}
-        <Link href={isAuthenticated ? '/students' : '/login'} className="group">
+        <Link href={isAuthenticated ? '/students' : '/login'} prefetch={true} className="group">
           <Card className="hover:border-primary/50 hover:shadow-md transition-all duration-200 bg-card">
             <CardContent className="p-6 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
@@ -146,7 +146,7 @@ export default async function HomePage() {
         </Link>
 
         {/* Graduated Alumni Card */}
-        <Link href={isAuthenticated ? '/alumni' : '/login'} className="group">
+        <Link href={isAuthenticated ? '/alumni' : '/login'} prefetch={true} className="group">
           <Card className="hover:border-primary/50 hover:shadow-md transition-all duration-200 bg-card">
             <CardContent className="p-6 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100/70 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">

@@ -37,6 +37,24 @@ export async function createSupabaseServerClient() {
   });
 }
 
+let publicSupabaseClient: ReturnType<typeof createClient<Database>> | null = null;
+
+/**
+ * Creates a public Supabase client for reading public data (profiles, sessions)
+ * without accessing request cookies. This enables Next.js to perform true static generation & Edge ISR!
+ */
+export function getSupabasePublicClient() {
+  if (!publicSupabaseClient) {
+    publicSupabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+  }
+  return publicSupabaseClient;
+}
+
 /**
  * Supabase Admin Client with Service Role Key.
  * EXCLUSIVELY for server-side elevated actions (e.g. deleting rejected users, seed/management).

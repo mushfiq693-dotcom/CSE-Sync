@@ -82,6 +82,7 @@ export async function createProfileAction(prevState: any, formData: FormData) {
 
     const result = await ProfileService.createProfile(validation.data);
     if (result.success) {
+      revalidatePath('/');
       revalidatePath('/students');
       revalidatePath('/alumni');
       revalidatePath('/dashboard/user');
@@ -118,6 +119,7 @@ export async function updateProfileAction(profileId: string, prevState: any, for
 
     const result = await ProfileService.updateProfile(profileId, validation.data);
     if (result.success) {
+      revalidatePath('/');
       revalidatePath('/students');
       revalidatePath('/alumni');
       revalidatePath(`/profile/${profileId}`);
@@ -139,6 +141,7 @@ export async function deleteProfileAction(profileId: string) {
   try {
     const result = await ProfileService.deleteProfile(profileId);
     if (result.success) {
+      revalidatePath('/');
       revalidatePath('/students');
       revalidatePath('/alumni');
       revalidatePath('/dashboard/admin');
@@ -157,6 +160,7 @@ export async function setLeadershipRoleAction(profileId: string, role: 'CR' | 'A
   try {
     const result = await ProfileService.setLeadershipRole(profileId, role);
     if (result.success) {
+      revalidatePath('/');
       revalidatePath('/students');
       revalidatePath('/alumni');
       revalidatePath(`/profile/${profileId}`);
@@ -176,6 +180,7 @@ export async function setAcademicRankAction(profileId: string, rank: '1st' | '2n
   try {
     const result = await ProfileService.setAcademicRank(profileId, rank);
     if (result.success) {
+      revalidatePath('/');
       revalidatePath('/students');
       revalidatePath('/alumni');
       revalidatePath(`/profile/${profileId}`);

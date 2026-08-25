@@ -2,7 +2,7 @@
 // GSTU CSE Directory — Session / Batch Service
 // ==============================================================================
 
-import { createSupabaseServerClient } from '../db/supabase-server';
+import { createSupabaseServerClient, getSupabasePublicClient } from '../db/supabase-server';
 import { AuthService } from './auth.service';
 import type { SessionRecord } from '../db/schema.types';
 
@@ -12,7 +12,7 @@ export class SessionService {
    */
   static async getSessions(): Promise<SessionRecord[]> {
     try {
-      const supabase = await createSupabaseServerClient();
+      const supabase = getSupabasePublicClient();
 
       const { data, error } = await supabase
         .from('sessions')

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'Browse all current undergraduate students in the Department of CSE, GSTU.',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function StudentsPage() {
   let initialProfiles: any[] = [];

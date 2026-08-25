@@ -2,7 +2,7 @@
 // GSTU CSE Directory — Profile Service (Student & Alumni Directory)
 // ==============================================================================
 
-import { createSupabaseServerClient } from '../db/supabase-server';
+import { createSupabaseServerClient, getSupabasePublicClient } from '../db/supabase-server';
 import { AuthService } from './auth.service';
 import type { ProfileInput } from '../validations/profile.validation';
 import type { ProfileRecord } from '../db/schema.types';
@@ -21,7 +21,7 @@ export class ProfileService {
    */
   static async getPublicProfiles(options: ProfileFilterOptions = {}): Promise<ProfileRecord[]> {
     try {
-      const supabase = await createSupabaseServerClient();
+      const supabase = getSupabasePublicClient();
 
       let query = (supabase.from('profiles') as any)
         .select(`
@@ -84,7 +84,7 @@ export class ProfileService {
    */
   static async getProfileById(id: string): Promise<ProfileRecord | null> {
     try {
-      const supabase = await createSupabaseServerClient();
+      const supabase = getSupabasePublicClient();
 
       const { data, error } = await (supabase.from('profiles') as any)
         .select(`
