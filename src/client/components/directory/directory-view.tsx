@@ -34,12 +34,13 @@ export function DirectoryView({
         return false;
       }
 
-      // 2. Search Filter (Name or Student ID)
+      // 2. Search Filter (Name, Student ID, or Home District)
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase().trim();
         const matchesName = p.full_name.toLowerCase().includes(query);
         const matchesId = p.student_id.toLowerCase().includes(query);
-        return matchesName || matchesId;
+        const matchesDistrict = p.home_district?.toLowerCase().includes(query) || false;
+        return matchesName || matchesId || matchesDistrict;
       }
 
       return true;
@@ -67,7 +68,7 @@ export function DirectoryView({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search by name or student ID..."
+            placeholder="Search by name, student ID, or home district..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9 pr-8"

@@ -69,6 +69,21 @@ export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
                 className="border-4 border-card ring-2 ring-border/50 shadow-md bg-card"
               />
               <div className="flex flex-wrap items-center gap-2">
+                {profile.academic_rank === '1st' && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 shadow-md ring-1 ring-amber-400/50">
+                    🥇 1st Position (Academic Merit)
+                  </span>
+                )}
+                {profile.academic_rank === '2nd' && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-1 rounded-full bg-gradient-to-r from-slate-600 via-slate-500 to-zinc-600 text-white shadow-md ring-1 ring-slate-400/50">
+                    🥈 2nd Position (Academic Merit)
+                  </span>
+                )}
+                {profile.academic_rank === '3rd' && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-800 via-orange-700 to-amber-900 text-amber-100 shadow-md ring-1 ring-orange-600/50">
+                    🥉 3rd Position (Academic Merit)
+                  </span>
+                )}
                 {isCR && (
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-amber-500 text-white shadow-sm">
                     <Crown className="h-3.5 w-3.5" /> Class Representative (CR)
@@ -77,21 +92,6 @@ export function ProfileDetailView({ profile }: ProfileDetailViewProps) {
                 {isACR && (
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-blue-600 text-white shadow-sm">
                     <Award className="h-3.5 w-3.5" /> Assistant CR (ACR)
-                  </span>
-                )}
-                {profile.academic_rank === '1st' && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 shadow-xs">
-                    🥇 1st Position (Academic Merit)
-                  </span>
-                )}
-                {profile.academic_rank === '2nd' && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-slate-400/20 text-slate-800 dark:text-slate-200 border border-slate-400/40 shadow-xs">
-                    🥈 2nd Position (Academic Merit)
-                  </span>
-                )}
-                {profile.academic_rank === '3rd' && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-orange-600/20 text-orange-800 dark:text-orange-300 border border-orange-600/40 shadow-xs">
-                    🥉 3rd Position (Academic Merit)
                   </span>
                 )}
                 <Badge variant={isStudent ? 'student' : 'alumni'} className="text-xs uppercase px-3 py-1">
