@@ -106,7 +106,7 @@ export default function RegisterPage() {
                 </label>
                 <Input
                   name="student_id"
-                  placeholder="e.g. 14CSE001"
+                  placeholder="e.g. 15CSE001 or 14CSE001"
                   required
                 />
               </div>

@@ -2,9 +2,11 @@
 
 import * as React from 'react';
 import { Button } from '@/client/components/ui/button';
+import { Badge } from '@/client/components/ui/badge';
 import { approveUserAction, rejectUserAction } from '@/server/actions/admin.actions';
 import type { UserProfileRecord } from '@/server/db/schema.types';
 import { Check, X, Loader2, UserCheck, AlertTriangle } from 'lucide-react';
+import { isBatch15 } from '@/client/lib/utils';
 
 interface PendingUsersTableProps {
   pendingUsers: UserProfileRecord[];
@@ -65,7 +67,16 @@ export function PendingUsersTable({ pendingUsers }: PendingUsersTableProps) {
               <tr key={user.id} className="hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-3 font-semibold text-foreground">{user.name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
-                <td className="px-4 py-3 font-medium text-foreground">{user.student_id}</td>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <span>{user.student_id}</span>
+                    {isBatch15(user.student_id) && (
+                      <Badge variant="outline" className="text-[10px] bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30 font-bold">
+                        Batch 15
+                      </Badge>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-xs text-muted-foreground" suppressHydrationWarning>
                   {(() => {
                     const d = new Date(user.created_at);

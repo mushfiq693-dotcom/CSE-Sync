@@ -6,6 +6,7 @@ import { Button } from '@/client/components/ui/button';
 import { updateUserRoleAction } from '@/server/actions/admin.actions';
 import type { UserProfileRecord, UserRole } from '@/server/db/schema.types';
 import { Shield, User, Loader2 } from 'lucide-react';
+import { isBatch15 } from '@/client/lib/utils';
 
 interface ApprovedUsersTableProps {
   approvedUsers: UserProfileRecord[];
@@ -43,15 +44,26 @@ export function ApprovedUsersTable({ approvedUsers }: ApprovedUsersTableProps) {
           {approvedUsers.map((user) => {
             const isLoading = loadingId === user.id;
             const isAdmin = user.role === 'admin';
+            const isBatch15User = isBatch15(user.student_id);
+
             return (
               <tr key={user.id} className="hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-3 font-semibold text-foreground">{user.name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
-                <td className="px-4 py-3 font-medium text-foreground">{user.student_id}</td>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <span>{user.student_id}</span>
+                    {isBatch15User && (
+                      <Badge variant="outline" className="text-[10px] bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30 font-bold">
+                        Batch 15
+                      </Badge>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-3">
-                  <Badge variant={isAdmin ? 'default' : 'secondary'} className="gap-1 text-xs">
+                  <Badge variant={isAdmin ? 'default' : isBatch15User ? 'outline' : 'secondary'} className="gap-1 text-xs">
                     {isAdmin ? <Shield className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                    {isAdmin ? 'Admin' : 'Approved User'}
+                    {isAdmin ? 'Admin' : isBatch15User ? 'Member (View Only)' : 'Approved Member'}
                   </Badge>
                 </td>
                 <td className="px-4 py-3 text-right">

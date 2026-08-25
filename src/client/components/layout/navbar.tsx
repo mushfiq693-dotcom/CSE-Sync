@@ -11,7 +11,7 @@ import {
   ChevronDown,
   ShieldCheck,
 } from 'lucide-react';
-import { cn } from '@/client/lib/utils';
+import { cn, isBatch15 } from '@/client/lib/utils';
 import { logoutAction } from '@/server/actions/auth.actions';
 import type { UserProfileRecord } from '@/server/db/schema.types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -119,10 +119,16 @@ export function Navbar({ currentUser }: NavbarProps) {
                     'text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md hidden xs:inline-block',
                     currentUser.role === 'admin'
                       ? 'bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300'
+                      : isBatch15(currentUser.student_id)
+                      ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30 font-semibold'
                       : 'bg-muted text-muted-foreground'
                   )}
                 >
-                  {currentUser.role === 'admin' ? 'Admin' : 'Member'}
+                  {currentUser.role === 'admin'
+                    ? 'Admin'
+                    : isBatch15(currentUser.student_id)
+                    ? 'Batch 15'
+                    : 'Member'}
                 </span>
 
                 <ChevronDown
@@ -163,6 +169,8 @@ export function Navbar({ currentUser }: NavbarProps) {
                         <span>
                           {currentUser.role === 'admin'
                             ? 'Administrator Access'
+                            : isBatch15(currentUser.student_id)
+                            ? 'Batch 15 Directory Access'
                             : 'Verified Member Account'}
                         </span>
                       </div>

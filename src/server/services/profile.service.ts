@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 import type { ProfileInput } from '../validations/profile.validation';
 import type { ProfileRecord } from '../db/schema.types';
 
+import { isBatch15 } from '@/client/lib/utils';
+
 export interface ProfileFilterOptions {
   profile_type?: 'student' | 'alumni';
   session_id?: string;
@@ -106,9 +108,19 @@ export class ProfileService {
   /**
    * Creates a new Student or Alumni profile.
    * Resolves created_by and updated_by server-side from the authenticated session.
+   * Batch 15 members are restricted from adding new profiles.
    */
   static async createProfile(input: ProfileInput) {
     const currentUser = await AuthService.requireApprovedUser();
+
+    // Batch 15 Privacy Restriction
+    if (currentUser.role !== 'admin' && isBatch15(currentUser.student_id)) {
+      return {
+        success: false,
+        error: 'Privacy Restriction: Batch 15 members do not have permission to add directory profiles.',
+      };
+    }
+
     const supabase = await createSupabaseServerClient();
 
     // If not admin, strip out leadership_role and academic_rank to prevent self-elevation
@@ -149,11 +161,21 @@ export class ProfileService {
 
   /**
    * Updates an existing profile (Shared Edit).
-   * Any approved user can update any profile.
+   * Any approved user from senior batches (or admin) can update any profile.
+   * Batch 15 members are strictly restricted from modifying profile details.
    * created_by is preserved, updated_by is assigned to the current editor.
    */
   static async updateProfile(id: string, input: ProfileInput) {
     const currentUser = await AuthService.requireApprovedUser();
+
+    // Batch 15 Privacy Restriction
+    if (currentUser.role !== 'admin' && isBatch15(currentUser.student_id)) {
+      return {
+        success: false,
+        error: 'Privacy Restriction: Batch 15 members do not have permission to change or edit student details.',
+      };
+    }
+
     const supabase = await createSupabaseServerClient();
 
     const sanitizedInput = { ...input };

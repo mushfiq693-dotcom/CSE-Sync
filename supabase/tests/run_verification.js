@@ -226,4 +226,49 @@ deleteProfile(p1.id, 'uAdmin');
 assert.strictEqual(profiles.some(p => p.id === p1.id), false);
 console.log('✅ Test 9b: Admin profile deletion successfully verified.');
 
-console.log('\n🎉 ALL 12 PHASE 3 VERIFICATION TESTS PASSED SUCCESSFULLY!');
+// 9. Batch 15 Privacy & Access Control Tests
+function isBatch15(studentId) {
+  if (!studentId) return false;
+  const clean = studentId.trim().toUpperCase().replace(/[\s\-_/]/g, '');
+  if (/^15/i.test(clean)) return true;
+  if (/^CSE15/i.test(clean)) return true;
+  return false;
+}
+
+assert.strictEqual(isBatch15('15CSE001'), true);
+assert.strictEqual(isBatch15('15-CSE-045'), true);
+assert.strictEqual(isBatch15('CSE15001'), true);
+assert.strictEqual(isBatch15('1501001'), true);
+assert.strictEqual(isBatch15('14CSE001'), false);
+assert.strictEqual(isBatch15('14CSE015'), false); // Student 15 from Batch 14 must not match
+console.log('✅ Test 10a: isBatch15 accurately distinguishes Batch 15 student IDs.');
+
+// Register Batch 15 User
+const batch15User = registerUser('u15', 'Batch 15 Student', 'batch15@gstu.ac.bd', '15CSE045');
+batch15User.status = 'approved';
+
+// Batch 15 update attempt blocked
+function updateProfileWithCheck(profileId, updateData, authenticatedUserId) {
+  const user = user_profiles.find(u => u.id === authenticatedUserId);
+  if (!user || user.status !== 'approved') throw new Error('Not approved');
+  if (user.role !== 'admin' && isBatch15(user.student_id)) {
+    throw new Error('Privacy Restriction: Batch 15 members cannot modify student details');
+  }
+  const prof = profiles.find(p => p.id === profileId);
+  if (!prof) throw new Error('Profile not found');
+  Object.assign(prof, updateData, { updated_by: user.id });
+  return prof;
+}
+
+assert.throws(() => {
+  updateProfileWithCheck(p2.id, { workplace: 'Hacked Workplace' }, 'u15');
+}, /Privacy Restriction: Batch 15 members cannot modify student details/);
+console.log('✅ Test 10b: Batch 15 member attempt to edit student details is correctly rejected.');
+
+// Senior Batch 14 user can update
+const updatedBySenior = updateProfileWithCheck(p2.id, { workplace: 'Valid Tech Ltd' }, 'u2');
+assert.strictEqual(updatedBySenior.workplace, 'Valid Tech Ltd');
+console.log('✅ Test 10c: Senior Batch approved user can successfully update student details.');
+
+console.log('\n🎉 ALL PHASE 3 & BATCH 15 PRIVACY VERIFICATION TESTS PASSED SUCCESSFULLY!');
+

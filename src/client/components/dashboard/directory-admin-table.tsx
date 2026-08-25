@@ -1,22 +1,24 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { Badge } from '@/client/components/ui/badge';
 import { Button } from '@/client/components/ui/button';
 import { Input } from '@/client/components/ui/input';
 import { deleteProfileAction, setLeadershipRoleAction, setAcademicRankAction } from '@/server/actions/profile.actions';
 import { ProfileFormDialog } from './profile-form-dialog';
 import type { ProfileRecord, SessionRecord } from '@/server/db/schema.types';
-import { Search, Edit3, Trash2, Loader2, Plus, Crown, Award, Check, Medal } from 'lucide-react';
+import { Search, Edit3, Trash2, Loader2, Plus, Crown, Award, Check, Medal, Eye, Lock } from 'lucide-react';
 import { cn } from '@/client/lib/utils';
 
 interface DirectoryAdminTableProps {
   profiles: ProfileRecord[];
   sessions: SessionRecord[];
   isAdmin: boolean;
+  canEdit?: boolean;
 }
 
-export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAdminTableProps) {
+export function DirectoryAdminTable({ profiles, sessions, isAdmin, canEdit = true }: DirectoryAdminTableProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedSession, setSelectedSession] = React.useState<string>('all');
   const [editingProfile, setEditingProfile] = React.useState<ProfileRecord | null>(null);
@@ -137,30 +139,37 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() => {
-              setCreateType('student');
-              setIsCreateModalOpen(true);
-            }}
-            className="gap-1.5 font-semibold shadow-sm text-xs"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add Student
-          </Button>
+        {canEdit || isAdmin ? (
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                setCreateType('student');
+                setIsCreateModalOpen(true);
+              }}
+              className="gap-1.5 font-semibold shadow-sm text-xs"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add Student
+            </Button>
 
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              setCreateType('alumni');
-              setIsCreateModalOpen(true);
-            }}
-            className="gap-1.5 font-semibold text-xs border-border"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add Alumni
-          </Button>
-        </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setCreateType('alumni');
+                setIsCreateModalOpen(true);
+              }}
+              className="gap-1.5 font-semibold text-xs border-border"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add Alumni
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 text-xs font-semibold shadow-xs">
+            <Eye className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span>Directory Browsing Mode</span>
+          </div>
+        )}
       </div>
 
       {/* Directory Records Table */}
@@ -175,7 +184,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
               <th className="px-4 py-3">Leadership (CR/ACR)</th>
               <th className="px-4 py-3">Academic Rank</th>
               <th className="px-4 py-3">Workplace</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-4 py-3 text-right">{canEdit || isAdmin ? 'Actions' : 'Details'}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -309,16 +318,27 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-1.5">
-                        {/* Shared Edit Button: Accessible to both Admin & Approved Users */}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setEditingProfile(p)}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                          title="Edit Profile (Shared Edit)"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </Button>
+                        {/* Edit Button: Accessible to Admin & Senior Approved Users */}
+                        {canEdit ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEditingProfile(p)}
+                            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                            title="Edit Profile (Shared Edit)"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Link
+                            href={`/profile/${p.id}`}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline px-2.5 py-1 rounded-md hover:bg-primary/10 transition-colors"
+                            title="View Full Profile Details"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            <span>View</span>
+                          </Link>
+                        )}
 
                         {/* Admin-only Delete Button */}
                         {isAdmin && (
@@ -344,7 +364,7 @@ export function DirectoryAdminTable({ profiles, sessions, isAdmin }: DirectoryAd
               })
             ) : (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-xs text-muted-foreground">
+                <td colSpan={8} className="px-4 py-8 text-center text-xs text-muted-foreground">
                   No directory profiles matching your filters.
                 </td>
               </tr>
