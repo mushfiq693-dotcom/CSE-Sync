@@ -93,8 +93,24 @@ export function Navbar({ currentUser }: NavbarProps) {
           </span>
         </div>
 
-        {/* Right Action: User Profile Dropdown OR Sign In/Register Buttons */}
+        {/* Right Action: Dashboard Button + User Profile Dropdown OR Sign In/Register Buttons */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {currentUser && (
+            <Link
+              href={currentUser.role === 'admin' ? '/dashboard/admin' : '/dashboard/user'}
+              className="hidden sm:inline-flex"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 h-8 sm:h-9 text-xs sm:text-sm font-bold border-amber-500/40 hover:bg-amber-500/10 text-foreground shadow-xs"
+              >
+                <LayoutDashboard className="h-4 w-4 text-primary" />
+                <span>Dashboard</span>
+              </Button>
+            </Link>
+          )}
+
           {currentUser ? (
             <div className="relative" ref={dropdownRef}>
               <button
@@ -176,8 +192,20 @@ export function Navbar({ currentUser }: NavbarProps) {
                       </div>
                     </div>
 
+                    {/* Navigation Actions */}
+                    <div className="py-1 space-y-1 border-b border-border/60 pb-2 mb-2">
+                      <Link
+                        href={currentUser.role === 'admin' ? '/dashboard/admin' : '/dashboard/user'}
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-foreground hover:bg-amber-500/15 transition-colors border border-transparent hover:border-amber-500/30"
+                      >
+                        <LayoutDashboard className="h-4 w-4 text-primary" />
+                        <span>{currentUser.role === 'admin' ? 'Admin Dashboard' : 'Member Dashboard'}</span>
+                      </Link>
+                    </div>
+
                     {/* Actions */}
-                    <div className="pt-1">
+                    <div className="pt-0.5">
                       <button
                         type="button"
                         onClick={handleSignOut}

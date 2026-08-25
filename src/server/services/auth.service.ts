@@ -1,7 +1,4 @@
-// ==============================================================================
-// GSTU CSE Directory — Authentication Service
-// ==============================================================================
-
+import { cache } from 'react';
 import { createSupabaseServerClient, getSupabaseAdminClient } from '../db/supabase-server';
 import type { RegisterInput, LoginInput } from '../validations/auth.validation';
 import type { UserProfileRecord } from '../db/schema.types';
@@ -97,25 +94,29 @@ export class AuthService {
   }
 
   /**
-   * Resolves the current session user with their user_profile record.
+   * Resolves the current session user with their user_profile record (memoized per-request).
    */
-  static async getCurrentUser(): Promise<UserProfileRecord | null> {
-    const supabase = await createSupabaseServerClient();
+  static getCurrentUser = cache(async (): Promise<UserProfileRecord | null> => {
+    try {
+      const supabase = await createSupabaseServerClient();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) return null;
+      if (!user) return null;
 
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-    return (profile as unknown as UserProfileRecord) || null;
-  }
+      return (profile as unknown as UserProfileRecord) || null;
+    } catch {
+      return null;
+    }
+  });
 
   /**
    * Guard helper: throws if not an approved user.

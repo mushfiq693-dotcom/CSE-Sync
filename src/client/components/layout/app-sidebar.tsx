@@ -42,8 +42,8 @@ export function AppSidebar({ currentUser }: AppSidebarProps) {
     };
   }, [isOpen]);
 
-  // Only render the floating Dashboard trigger and drawer if user is SIGNED IN and on the Home page ('/')
-  if (!currentUser || pathname !== '/') {
+  // Only render the floating Dashboard trigger and drawer if user is SIGNED IN
+  if (!currentUser) {
     return null;
   }
 
@@ -52,6 +52,18 @@ export function AppSidebar({ currentUser }: AppSidebarProps) {
       href: '/',
       label: 'Home',
       icon: LayoutGrid,
+      badge: undefined,
+    },
+    {
+      href: '/students',
+      label: 'Current Students',
+      icon: UserCheck,
+      badge: undefined,
+    },
+    {
+      href: '/alumni',
+      label: 'Alumni Directory',
+      icon: Shield,
       badge: undefined,
     },
     {
