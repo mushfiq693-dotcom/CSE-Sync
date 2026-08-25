@@ -47,8 +47,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background font-sans text-foreground antialiased selection:bg-primary/20 selection:text-foreground relative overflow-x-hidden">
-        {/* Soft Champagne & Muted Gold Ambient Glows */}
-        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        {/* Fixed Ambient Background - Smooth, seamless on all pages and browsers */}
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-background">
+          <div className="absolute inset-0 bg-[radial-gradient(at_0%_0%,rgba(230,205,155,0.35)_0px,transparent_55%),radial-gradient(at_100%_100%,rgba(215,185,130,0.25)_0px,transparent_50%),linear-gradient(180deg,#FAF8F4_0%,#F4ECE0_50%,#EBDCC6_100%)] dark:bg-[radial-gradient(at_0%_0%,rgba(245,158,11,0.12)_0px,transparent_55%),radial-gradient(at_100%_100%,rgba(217,119,6,0.08)_0px,transparent_50%),linear-gradient(180deg,#0F0F12_0%,#15151A_50%,#1B1B22_100%)] opacity-90" />
           <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-tr from-amber-300/20 via-yellow-200/15 to-transparent blur-[140px] rounded-full" />
           <div className="absolute top-[650px] -right-36 w-[600px] h-[600px] bg-gradient-to-bl from-amber-200/25 via-amber-100/20 to-transparent blur-[150px] rounded-full" />
         </div>

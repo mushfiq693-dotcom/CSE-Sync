@@ -72,7 +72,7 @@ export default async function HomePage() {
               <Link href="/students" className="group">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                 >
                   <Users className="h-5 w-5 text-white/90" />
                   <span>Explore Current Students</span>
@@ -84,7 +84,7 @@ export default async function HomePage() {
               <Link href="/alumni" className="group">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                 >
                   <GraduationCap className="h-5 w-5 text-white/90" />
                   <span>Explore Alumni Directory</span>
@@ -98,7 +98,7 @@ export default async function HomePage() {
               <Link href="/login" className="group">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
                   title="Sign In required to explore current students"
                 >
                   <Lock className="h-4 w-4 text-white/90" />
@@ -111,7 +111,7 @@ export default async function HomePage() {
               <Link href="/login" className="group">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:from-[#C48514] hover:to-[#9B6406] shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-semibold text-sm sm:text-base text-white bg-gradient-to-r from-[#B87B10] via-[#A86E0B] to-[#8E5B05] hover:brightness-110 shadow-lg shadow-amber-900/15 hover:shadow-xl hover:shadow-amber-900/25 border border-white/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
                   title="Sign In required to explore alumni directory"
                 >
                   <Lock className="h-4 w-4 text-white/90" />
