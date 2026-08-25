@@ -6,7 +6,7 @@ import { Globe, Github, Linkedin, ExternalLink, X, Code2, Sparkles } from 'lucid
 
 export interface DeveloperBadgeProps {
   name?: string;
-  initial?: string;
+  avatarImage?: string;
   role?: string;
   tagline?: string;
   portfolioUrl?: string;
@@ -17,7 +17,7 @@ export interface DeveloperBadgeProps {
 
 export function DeveloperBadge({
   name = 'Mushfiqur Rahman',
-  initial = 'M',
+  avatarImage = '/developer.jpg',
   role = 'Full-stack Developer',
   tagline = 'Architected & developed with modern web standards by Mushfiq.',
   portfolioUrl = 'https://portfolio2-8i64o9nca-zeni-n-clan.vercel.app',
@@ -81,8 +81,12 @@ export function DeveloperBadge({
             {/* Header: Avatar, Name & Close button */}
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-white font-black text-base shadow-md border border-zinc-700/50 shrink-0">
-                  {initial}
+                <div className="relative h-11 w-11 rounded-xl overflow-hidden shadow-md border border-amber-500/40 bg-zinc-900 shrink-0">
+                  <img
+                    src={avatarImage}
+                    alt={name}
+                    className="h-full w-full object-cover object-top"
+                  />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -173,11 +177,17 @@ export function DeveloperBadge({
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
-        className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-zinc-950 text-white font-bold text-sm sm:text-base shadow-lg shadow-black/25 border border-zinc-700/60 hover:border-primary/80 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-zinc-950 text-white font-bold text-sm sm:text-base shadow-lg shadow-black/25 border-2 border-amber-500/60 hover:border-amber-400 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 overflow-visible"
         aria-label="Developer Information & Signature"
         title="Designed & Developed by Mushfiqur Rahman"
       >
-        <span className="font-black tracking-tight">{initial}</span>
+        <div className="h-full w-full rounded-full overflow-hidden">
+          <img
+            src={avatarImage}
+            alt={name}
+            className="h-full w-full object-cover object-top"
+          />
+        </div>
 
         {/* Small active badge dot indicator */}
         <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
