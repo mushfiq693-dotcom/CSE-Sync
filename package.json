@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:verify": "node supabase/tests/run_verification.js"
+    "test:verify": "node supabase/tests/run_verification.js",
+    "seed:demo": "node supabase/seed-demo-users.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
