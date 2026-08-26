@@ -7,21 +7,27 @@ import { Button } from '@/client/components/ui/button';
 import { Input } from '@/client/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/client/components/ui/card';
 import { loginAction } from '@/server/actions/auth.actions';
-import { Loader2, AlertCircle, Clock, Lock } from 'lucide-react';
+import { Loader2, AlertCircle, Clock, Lock, Sparkles, ShieldCheck, UserCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [demoLoadingRole, setDemoLoadingRole] = React.useState<'admin' | 'user' | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [isPendingApproval, setIsPendingApproval] = React.useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const executeLogin = async (targetEmail: string, targetPass: string, roleType?: 'admin' | 'user') => {
     setIsSubmitting(true);
+    if (roleType) setDemoLoadingRole(roleType);
     setErrorMessage(null);
     setIsPendingApproval(false);
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData();
+    formData.append('email', targetEmail);
+    formData.append('password', targetPass);
+
     try {
       const result = await loginAction(null, formData);
 
@@ -29,7 +35,7 @@ export default function LoginPage() {
         if (result.isPending) {
           setIsPendingApproval(true);
         } else {
-          setErrorMessage(result.error || 'Invalid credentials.');
+          setErrorMessage(result.error || 'Invalid credentials. Please verify your email and password.');
         }
       } else {
         if (result.role === 'admin') {
@@ -42,7 +48,19 @@ export default function LoginPage() {
       setErrorMessage(err.message || 'An error occurred while logging in.');
     } finally {
       setIsSubmitting(false);
+      setDemoLoadingRole(null);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await executeLogin(email, password);
+  };
+
+  const handleQuickDemo = (demoEmail: string, demoPass: string, role: 'admin' | 'user') => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+    executeLogin(demoEmail, demoPass, role);
   };
 
   return (
@@ -58,9 +76,69 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="space-y-5">
+          {/* Quick Demo Access for Recruiters & Reviewers */}
+          <div className="p-3.5 rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
+                <Sparkles className="h-3.5 w-3.5" />
+                Recruiter / Quick Demo Access
+              </span>
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">1-Click</span>
+            </div>
             
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              Reviewing this project for hiring or evaluation? Click a role below to explore the dashboard instantly:
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isSubmitting}
+                onClick={() => handleQuickDemo('admin@demo.com', 'demo123456', 'admin')}
+                className="h-auto py-2 px-2.5 flex flex-col items-start gap-0.5 border-primary/30 hover:border-primary hover:bg-primary/10 text-left"
+              >
+                <div className="flex items-center gap-1 text-xs font-semibold text-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                  {demoLoadingRole === 'admin' ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    'Demo Admin'
+                  )}
+                </div>
+                <span className="text-[10px] text-muted-foreground">Full approval & CRUD</span>
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isSubmitting}
+                onClick={() => handleQuickDemo('user@demo.com', 'demo123456', 'user')}
+                className="h-auto py-2 px-2.5 flex flex-col items-start gap-0.5 border-primary/30 hover:border-primary hover:bg-primary/10 text-left"
+              >
+                <div className="flex items-center gap-1 text-xs font-semibold text-foreground">
+                  <UserCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  {demoLoadingRole === 'user' ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    'Demo Contributor'
+                  )}
+                </div>
+                <span className="text-[10px] text-muted-foreground">Collaborative editor</span>
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative flex py-0.5 items-center">
+            <div className="flex-grow border-t border-border"></div>
+            <span className="flex-shrink mx-2 text-[10px] uppercase font-semibold text-muted-foreground">Or sign in manually</span>
+            <div className="flex-grow border-t border-border"></div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Pending Approval Feedback Alert */}
             {isPendingApproval && (
               <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-3 text-amber-900 dark:text-amber-200">
@@ -91,7 +169,9 @@ export default function LoginPage() {
               <Input
                 type="email"
                 name="email"
-                placeholder="name@gstu.ac.bd"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@gstu.ac.bd or admin@demo.com"
                 required
                 autoComplete="email"
               />
@@ -104,6 +184,8 @@ export default function LoginPage() {
               <Input
                 type="password"
                 name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
@@ -111,7 +193,7 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" disabled={isSubmitting} className="w-full font-semibold shadow-sm">
-              {isSubmitting ? (
+              {isSubmitting && !demoLoadingRole ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Verifying Credentials...
